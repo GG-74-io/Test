@@ -811,7 +811,7 @@ tbody tr:hover td{background:var(--surf2)}
     <div class="fg"><label>Anticipo ($)</label><input type="number" id="v-ant" value="0" min="0" oninput="calcVentaTotal();toggleVentaAntForma()"></div>
     <div class="fg"><label>Monto quincenal ($)</label><input type="number" id="v-quinc" value="200" min="0" oninput="renderCalPagos()"><div class="fn">Default $200</div></div>
   </div>
-  <div class="fg" id="v-ant-forma-row"><label>Forma de pago anticipo</label><select id="v-ant-forma" disabled style="opacity:.5"><option value="">-- Selecciona anticipo primero --</option></select><div class="fn" id="v-ant-forma-fn" style="display:none">Requerido cuando hay anticipo</div></div>
+  <div class="fg" id="v-ant-forma-row"><label>Forma de pago anticipo</label><select id="v-ant-forma"><option value="">-- Selecciona (si hay anticipo) --</option></select><div class="fn" id="v-ant-forma-fn" style="display:none;color:var(--err)">Requerido cuando el anticipo es mayor a $0</div></div>
   <div class="fg"><label>Fecha primer pago</label><input type="date" id="v-fprimer" oninput="renderCalPagos()"></div>
   <div class="fg"><label>Observaciones</label><input type="text" id="v-obs" placeholder="Acuerdos especiales, notas..."></div>
   <div id="v-cal-pagos"></div>
@@ -1862,7 +1862,8 @@ function openM(id){
       buildVentaProductos();
       sv('v-uds','1');sv('v-desc','0');sv('v-ant','0');sv('v-quinc','200');sv('v-precio-u','950');sv('v-obs','');
       const _vaf=$$('v-ant-forma');if(_vaf){_vaf.innerHTML='<option value="">-- Selecciona --</option>'+(LISTS.formas_pago||[]).map(f=>`<option>${f}</option>`).join('');}
-      if($$('v-ant-forma')){$$('v-ant-forma').disabled=true;$$('v-ant-forma').style.opacity='.5';$$('v-ant-forma').value='';}
+      if($$('v-ant-forma'))$$('v-ant-forma').value='';
+      if($$('v-ant-forma-fn'))$$('v-ant-forma-fn').style.display='none';
       calcVentaTotal();renderCalPagos();
     }catch(e){console.error('m-venta init error:',e);}
   }
@@ -4383,8 +4384,9 @@ function renderCalPagos(){
   const total=parseFloat(($$('v-total')||{}).value)||0;
   const ant=parseFloat(($$('v-ant')||{}).value)||0;
   const _vAntForma=($$('v-ant-forma')?.value||'').trim();
-  if(ant>0&&!_vAntForma){toastMsg('Selecciona la forma de pago del anticipo','err');
-    if(_btn$$){_btn$$.disabled=false;_btn$$.textContent='Registrar venta';}return;}
+  if(ant>0&&!_vAntForma){toastMsg('Selecciona la forma de pago del anticipo','err');return;}
+  // All validations passed — disable button now
+  if(_btn$$){_btn$$.disabled=true;_btn$$.textContent='Guardando…';}
   const quinc=parseFloat(($$('v-quinc')||{}).value)||200;
   const fprimer=cv('v-fprimer')||isoOffset(15);
   const saldo=total-ant;
@@ -4408,16 +4410,15 @@ function renderCalPagos(){
 
 function toggleVentaAntForma(){
   const val=parseFloat(($$('v-ant')||{}).value)||0;
-  const sel=$$('v-ant-forma');
   const fn=$$('v-ant-forma-fn');
-  if(sel){sel.disabled=val<=0;sel.style.opacity=val>0?'1':'.5';}
+  // Select always enabled — just show hint when anticipo > 0
   if(fn)fn.style.display=val>0?'block':'none';
-  if(val===0&&sel)sel.value='';
+  if(val===0&&$$('v-ant-forma'))$$('v-ant-forma').value='';
 }
 async function saveVenta(){
   const _btn$$=document.getElementById('btn-save-venta');
   if(_btn$$&&_btn$$.disabled)return;
-  if(_btn$$){_btn$$.disabled=true;_btn$$.textContent='Guardando…';}
+  // Validaciones primero — botón se deshabilita solo si todo pasa
   const cliId=parseInt(cv('v-cli'));const prodSel=cv('v-prod');
   if(!cliId||!prodSel){toastMsg('Selecciona cliente y producto','err');return;}
   const cli=DB.clients.find(c=>c.id===cliId);if(!cli){toastMsg('Cliente no encontrado','err');return;}
