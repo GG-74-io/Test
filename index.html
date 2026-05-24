@@ -198,7 +198,7 @@ tbody tr:hover td{background:var(--surf2)}
 .vb-w{color:var(--warn);font-size:10px;font-weight:500}
 /* ── DETAIL ── */
 .d-img{width:100%;height:200px;border-radius:var(--rs);overflow:hidden;margin-bottom:10px;background:var(--surf2);display:flex;align-items:center;justify-content:center}
-.d-img img{width:100%;height:100%;object-fit:cover}
+.d-img img{width:100%;height:100%;object-fit:contain}
 .d-em{font-size:66px}
 .pir-box{background:var(--surf2);border-radius:var(--rs);padding:10px;font-size:12px;margin-bottom:9px}
 .pir-lbl{font-size:9px;color:var(--mist);font-weight:500;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
@@ -258,6 +258,7 @@ tbody tr:hover td{background:var(--surf2)}
           <button class="btn btn-outline btn-sm" onclick="openM('m-imagenes')">&#128247; Im&aacute;genes</button>
           <button class="btn btn-outline btn-sm" onclick="openImportWeb()">&#127760; Importar web</button>
           <button class="btn btn-gold btn-sm" onclick="openProductForm()">+ Agregar</button>
+          <button class="btn btn-outline btn-sm" onclick="clearCatFilter()" style="font-size:11px">Limpiar</button>
           <select id="cat-sort-field" onchange="filterCatalog()" style="font-size:11px;padding:3px 5px"><option value="">Ordenar...</option><option value="nombre">Nombre</option><option value="precio">Precio</option><option value="marca">Marca</option><option value="genero">Género</option><option value="familia">Familia</option><option value="concentracion">Concentración</option><option value="imarca">Inspiración</option><option value="proy">Proyección</option><option value="dur">Duración</option><option value="intensidad">Intensidad</option></select>
           <select id="cat-sort-dir" onchange="filterCatalog()" style="font-size:11px;padding:3px 5px"><option value="asc">A↑</option><option value="desc">Z↓</option></select>
         </div>
@@ -273,7 +274,6 @@ tbody tr:hover td{background:var(--surf2)}
           <select id="fq-uso" onchange="filterCatalog()"><option value="">Uso</option></select>
         <select id="fq-clave" onchange="filterCatalog()"><option value="">Clave</option></select>
           <select id="fq-estado" onchange="filterCatalog()"><option value="">Todos los estados</option><option value="mio">Mi negocio</option><option value="fav">Favorito</option><option value="pros">Prospecto</option><option value="ver">Verificado</option><option value="nv">No vendible</option><option value="oculto">Oculto</option></select>
-          <button class="btn btn-outline btn-sm" onclick="clearCatFilter()">Limpiar</button>
         </div>
         <div class="fbar-r" style="margin-top:6px">
           <select id="fq-top" onchange="filterCatalog()"><option value="">Nota Salida</option></select>
@@ -310,9 +310,10 @@ tbody tr:hover td{background:var(--surf2)}
     <!-- ═══ MIS PRODUCTOS ═══ -->
     <div id="s-mis-prod" class="sec">
       <div class="sh">
-        <div class="sh-l"><h2>Mis Productos</h2><p>Solo perfumes en "Mi negocio" &mdash; <span id="mis-count-total">0</span> producto(s)</p></div>
+        <div class="sh-l"><h2>Mis Productos</h2><p>Solo perfumes en "Mi negocio" &mdash; <span id="mis-count-filtered">0</span> / <span id="mis-count-total">0</span> producto(s)</p></div>
         <div class="sh-a">
-          <select id="mis-sort-field" onchange="renderMis()" style="font-size:11px;padding:3px 5px"><option value="">Ordenar...</option><option value="nombre">Nombre</option><option value="precio">Precio</option><option value="marca">Marca</option><option value="genero">Género</option><option value="familia">Familia</option><option value="concentracion">Concentración</option><option value="imarca">Inspiración</option><option value="proy">Proyección</option><option value="dur">Duración</option><option value="intensidad">Intensidad</option></select>
+          <button class="btn btn-outline btn-sm" onclick="clearMisFilter()" style="font-size:11px">Limpiar</button>
+          <select id="mis-sort-field" onchange="renderMis()" style="font-size:11px;padding:3px 5px"><option value="">Ordenar...</option><option value="gsheet">GSheet</option><option value="captura">Captura</option><option value="nombre">Nombre</option><option value="precio">Precio</option><option value="marca">Marca</option><option value="genero">Género</option><option value="familia">Familia</option><option value="concentracion">Concentración</option><option value="imarca">Inspiración</option><option value="proy">Proyección</option><option value="dur">Duración</option><option value="intensidad">Intensidad</option></select>
           <select id="mis-sort-dir" onchange="renderMis()" style="font-size:11px;padding:3px 5px"><option value="asc">A↑</option><option value="desc">Z↓</option></select>
           <button class="btn btn-outline btn-sm" onclick="openCompare()">&#9878; Comparar</button>
           <button class="btn btn-outline btn-sm" onclick="exportMisPDF()">PDF</button>
@@ -332,7 +333,6 @@ tbody tr:hover td{background:var(--surf2)}
           <select id="mq-uso" onchange="renderMis()"><option value="">Uso</option></select>
           <select id="mq-estado" onchange="renderMis()"><option value="">Todos los estados</option><option value="mio">Mi negocio</option><option value="fav">Favorito</option><option value="pros">Prospecto</option><option value="ver">Verificado</option><option value="nv">No vendible</option><option value="oculto">Oculto</option></select>
           <select id="mq-exist" onchange="renderMis()"><option value="">Todos</option><option value="1">Con existencia</option></select>
-          <button class="btn btn-outline btn-sm" onclick="clearMisFilter()">Limpiar</button>
         </div>
         <div class="fbar-r" style="margin-top:6px">
           <select id="mq-top" onchange="renderMis()"><option value="">Nota Salida</option></select>
@@ -544,7 +544,7 @@ tbody tr:hover td{background:var(--surf2)}
             <button class="seg-btn" onclick="setReporte('compras',this)">Compras</button>
             <button class="seg-btn" onclick="setReporte('pagos-prov',this)">Pagos proveedor</button>
             <button class="seg-btn" onclick="setReporte('ventas',this)">Ventas</button>
-            <button class="seg-btn" onclick="setReporte('pagos-cli',this)">Pagos cliente</button>
+            <button class="seg-btn" onclick="setReporte('pagos-cli',this)">Clientes</button>
             <button class="seg-btn" onclick="setReporte('inventario',this)">Inventario</button>
             <button class="seg-btn" onclick="setReporte('ranking',this)">Rankings</button>
             <button class="seg-btn" onclick="setReporte('cobranza',this)">Proyecci&#243;n cobranza</button>
@@ -626,14 +626,25 @@ tbody tr:hover td{background:var(--surf2)}
 <div class="mbg" id="m-detail">
 <div class="modal" style="width:min(640px,100%)">
   <div class="mhdr">
-    <div style="display:flex;gap:5px;flex-wrap:wrap">
+    <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
       <button class="btn btn-outline btn-sm" onclick="editCurDetail()">&#9999; Editar</button>
       <button class="sbtn s-wa" onclick="shareDetailWA()">WA</button>
       <button class="btn btn-outline btn-sm" onclick="shareDetailIG()">IG</button>
     </div>
-    <button class="mx" onclick="closeM('m-detail')">&#10005;</button>
+    <div style="display:flex;gap:5px;align-items:center">
+      <button class="btn btn-gold btn-sm" onclick="closeM('m-detail');openM('m-cli')">+ Cliente</button>
+      <button class="btn btn-gold btn-sm" onclick="closeM('m-detail');openM('m-venta')">+ Venta</button>
+      <span style="width:10px;display:inline-block"></span>
+      <button class="mx" onclick="closeM('m-detail')">&#10005;</button>
+    </div>
   </div>
-  <div id="detail-body" style="overflow-y:auto;max-height:75vh"></div>
+  <!-- Navegación anterior/siguiente -->
+  <div id="detail-nav" style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px 0;font-size:11px;color:var(--mist)">
+    <button id="detail-prev" onclick="navigateDetail(-1)" style="border:none;background:none;cursor:pointer;font-size:18px;color:var(--gold);padding:2px 8px" title="Anterior">&#8249;</button>
+    <span id="detail-pos"></span>
+    <button id="detail-next" onclick="navigateDetail(1)" style="border:none;background:none;cursor:pointer;font-size:18px;color:var(--gold);padding:2px 8px" title="Siguiente">&#8250;</button>
+  </div>
+  <div id="detail-body" style="overflow-y:auto;max-height:72vh" ontouchstart="detailSwipeStart(event)" ontouchend="detailSwipeEnd(event)"></div>
 </div>
 </div>
 
@@ -798,9 +809,9 @@ tbody tr:hover td{background:var(--surf2)}
   </div>
   <div class="f2">
     <div class="fg"><label>Anticipo ($)</label><input type="number" id="v-ant" value="0" min="0" oninput="calcVentaTotal();toggleVentaAntForma()"></div>
-    <div class="fg" id="v-ant-forma-row" style="display:none"><label>Forma de pago anticipo</label><select id="v-ant-forma"></select></div>
     <div class="fg"><label>Monto quincenal ($)</label><input type="number" id="v-quinc" value="200" min="0" oninput="renderCalPagos()"><div class="fn">Default $200</div></div>
   </div>
+  <div class="fg" id="v-ant-forma-row"><label>Forma de pago anticipo</label><select id="v-ant-forma" disabled style="opacity:.5"><option value="">-- Selecciona anticipo primero --</option></select><div class="fn" id="v-ant-forma-fn" style="display:none">Requerido cuando hay anticipo</div></div>
   <div class="fg"><label>Fecha primer pago</label><input type="date" id="v-fprimer" oninput="renderCalPagos()"></div>
   <div class="fg"><label>Observaciones</label><input type="text" id="v-obs" placeholder="Acuerdos especiales, notas..."></div>
   <div id="v-cal-pagos"></div>
@@ -1851,7 +1862,7 @@ function openM(id){
       buildVentaProductos();
       sv('v-uds','1');sv('v-desc','0');sv('v-ant','0');sv('v-quinc','200');sv('v-precio-u','950');sv('v-obs','');
       const _vaf=$$('v-ant-forma');if(_vaf){_vaf.innerHTML='<option value="">-- Selecciona --</option>'+(LISTS.formas_pago||[]).map(f=>`<option>${f}</option>`).join('');}
-      const _vafr=$$('v-ant-forma-row');if(_vafr)_vafr.style.display='none';
+      if($$('v-ant-forma')){$$('v-ant-forma').disabled=true;$$('v-ant-forma').style.opacity='.5';$$('v-ant-forma').value='';}
       calcVentaTotal();renderCalPagos();
     }catch(e){console.error('m-venta init error:',e);}
   }
@@ -2296,7 +2307,9 @@ function filterCatalog(){
     if(_sf==='precio')return _sd==='asc'?va-vb:vb-va;
     return _sd==='asc'?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));
   });
-  $$('cat-count').textContent=list.length+' perfumes';
+  const _catTot=DB.products.length;
+  $$('cat-count').textContent=list.length<_catTot?(list.length+' / '+_catTot+' perfumes'):(list.length+' perfumes');
+  window._lastCatList=list.map(p=>p.id);
   renderCards(list,'pgrid');
 }
 function clearCatFilter(){
@@ -2319,7 +2332,7 @@ function renderCards(list,gid){
     const multiImgBadge=(p.imgs&&p.imgs.length>1)?`<span class="pcb" style="background:rgba(0,0,0,.55);color:#fff;top:auto;bottom:28px;left:5px;right:auto">${p.imgs.length} &#128247;</span>`:'';
     return `<div class="pcard${selProds.has(p.id)?' pcard-sel':''}" id="pc-${p.id}">
       <input type="checkbox" class="pcard-cb" ${selProds.has(p.id)?'checked':''} onchange="togglePSel(${p.id},this.checked)" onclick="event.stopPropagation()">
-      <div class="pcard-img" onclick="openDetail(${p.id})">${imgEl}${badge}${multiImgBadge}
+      <div class="pcard-img" onclick="openDetail(${p.id},window._lastCatList)">${imgEl}${badge}${multiImgBadge}
         ${p.oculto?'<span class="pcb" style="background:rgba(0,0,0,.5);color:#ccc;top:auto;bottom:5px">Oculto</span>':''}
         <button class="pcard-edit" onclick="event.stopPropagation();editFromCard(${p.id})">&#9999;</button>
       </div>
@@ -2375,7 +2388,9 @@ async function toggleF(id,flag){
 //  DETAIL MODAL
 // ═══════════════════════════════════════════════════════════
 let curDetailId=null;
-function openDetail(id){
+let _detailList=[];  // lista actual para navegación (catálogo o mis productos)
+function openDetail(id,listOverride){
+  if(listOverride)_detailList=listOverride;
   const p=DB.products.find(x=>x.id===id);if(!p)return;curDetailId=id;
   const marca=arr(p.marca)[0]||p.marca||'';
   const allImgs=p.imgs&&p.imgs.length?p.imgs:(p.img_url?[{id:p.img_id,url:p.img_url}]:[]);
@@ -2388,8 +2403,17 @@ function openDetail(id){
       <img src="${img.url}" loading="lazy">
     </div>`).join('')}</div>`:'';;
   const hasPir=arr(p.top).length||arr(p.cor).length||arr(p.fondo).length;
+  const _detExist=getExistenciaForProd(p.id);
+  // Update nav position indicator
+  const _detIdx=_detailList.findIndex(x=>(x.id||x)===id);
+  const _detPos=$$("detail-pos");if(_detPos)_detPos.textContent=_detailList.length>1?(_detIdx+1)+'/'+_detailList.length:'';
+  const _detPrev=$$("detail-prev");if(_detPrev)_detPrev.style.visibility=_detIdx>0?'visible':'hidden';
+  const _detNext=$$("detail-next");if(_detNext)_detNext.style.visibility=_detIdx<_detailList.length-1?'visible':'hidden';
   $$('detail-body').innerHTML=`${imgHtml}${thumbsHtml}
-    <div style="font-size:9px;color:var(--mist);text-transform:uppercase;letter-spacing:.5px">${p.fuente} &#183; ${marca}</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div style="font-size:9px;color:var(--mist);text-transform:uppercase;letter-spacing:.5px">${p.fuente} &#183; ${marca}</div>
+      <span class="pill ${_detExist>0?'p-ok':'p-err'}" style="font-size:11px;flex-shrink:0">${_detExist} en stock</span>
+    </div>
     ${p.clave?`<div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:var(--gold);margin-bottom:2px">${p.clave}</div>`:''}
     <h3 style="font-size:22px;margin:3px 0 2px">${p.nombre}</h3>
     ${p.perfume_principal?`<div style="font-size:12px;color:var(--mist);margin-bottom:4px">Derivado de: <em>${p.perfume_principal}</em></div>`:''}
@@ -2415,6 +2439,20 @@ function openDetail(id){
   openM('m-detail');
 }
 function editCurDetail(){if(!curDetailId)return;closeM('m-detail');editFromCard(curDetailId);}
+function navigateDetail(dir){
+  const idx=_detailList.findIndex(x=>(x.id||x)===curDetailId);
+  const nIdx=idx+dir;
+  if(nIdx<0||nIdx>=_detailList.length)return;
+  const next=_detailList[nIdx];
+  openDetail(next.id||next,_detailList);
+}
+let _swipeStartX=0;
+function detailSwipeStart(e){_swipeStartX=e.touches[0].clientX;}
+function detailSwipeEnd(e){
+  const dx=e.changedTouches[0].clientX-_swipeStartX;
+  if(Math.abs(dx)<50)return;
+  navigateDetail(dx<0?1:-1);
+}
 function shareDetailWA(){
   const p=DB.products.find(x=>x.id===curDetailId);if(!p)return;
   const marca=arr(p.marca)[0]||p.marca||'';
@@ -2723,12 +2761,19 @@ function renderMis(){
        arr(p.familia).join(' ')].join(' ').toLowerCase().includes(q))return false;
     return true;
   });
-  // Update count
+  // Update count — filtered / total
   const _misTot=DB.products.filter(p=>p.mio&&!p.oculto).length;
   const _cntEl=$$('mis-count-total');if(_cntEl)_cntEl.textContent=_misTot;
+  const _cntFil=$$('mis-count-filtered');if(_cntFil)_cntFil.textContent=list.length;
   // Sort
   const _msf=$$('mis-sort-field')?.value,_msd=$$('mis-sort-dir')?.value||'asc';
-  if(_msf){
+  if(_msf==='gsheet'){
+    // Order as they appear in DB.products array (=GSheet row order)
+    const _gsIdx={}; DB.products.forEach((p,i)=>{_gsIdx[p.id]=i;});
+    list.sort((a,b)=>_msd==='asc'?_gsIdx[a.id]-_gsIdx[b.id]:_gsIdx[b.id]-_gsIdx[a.id]);
+  } else if(_msf==='captura'){
+    list.sort((a,b)=>_msd==='asc'?a.id-b.id:b.id-a.id);
+  } else if(_msf){
     list.sort((a,b)=>{
       const va=_msf==='precio'?(a.precio||0):_msf==='familia'?arr(a.familia).join():_msf==='marca'?(arr(a.marca)[0]||''):_msf==='imarca'?(a.imarca||''):(a[_msf]||'');
       const vb=_msf==='precio'?(b.precio||0):_msf==='familia'?arr(b.familia).join():_msf==='marca'?(arr(b.marca)[0]||''):_msf==='imarca'?(b.imarca||''):(b[_msf]||'');
@@ -2736,6 +2781,7 @@ function renderMis(){
       return _msd==='asc'?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));
     });
   }
+  window._lastMisList=list.map(p=>p.id);
   const g=$$('mis-grid');
   if(!list.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">&#128230;</div><p>Sin productos. Marca perfumes como "Mi negocio".</p></div>';return;}
   updateMisSelBar();
@@ -2747,7 +2793,7 @@ function renderMis(){
     const invInfo=invLines.map(i=>`${i.tipo} ${i.pres} (${getExistencia(i)})`).join(', ');
     return `<div class="pcard${selProds.has(p.id)?' pcard-sel':''}" id="pc-${p.id}">
       <input type="checkbox" class="pcard-cb" ${selProds.has(p.id)?'checked':''} onchange="togglePSel(${p.id},this.checked)" onclick="event.stopPropagation()">
-      <div class="pcard-img" onclick="openDetail(${p.id})">${imgEl}${exist>0?'':`<span class="pcb" style="background:rgba(155,34,38,.85);color:#fff;top:auto;bottom:5px">Sin stock</span>`}
+      <div class="pcard-img" onclick="openDetail(${p.id},window._lastMisList)">${imgEl}${exist>0?'':`<span class="pcb" style="background:rgba(155,34,38,.85);color:#fff;top:auto;bottom:5px">Sin stock</span>`}
         <button class="pcard-edit" onclick="event.stopPropagation();editFromCard(${p.id})">&#9999;</button>
       </div>
       <div class="pcard-body">
@@ -2799,7 +2845,7 @@ function clearMisFilter(){
   sv('mq','');
   ['mq-marca','mq-genero','mq-familia','mq-inspo','mq-uso','mq-estado','mq-exist',
    'mq-top','mq-cor','mq-fondo','mq-conc','mq-dur','mq-proy','mq-intens','mq-temp',
-   'mis-sort-field']
+   'mis-sort-field','mis-sort-dir']
   .forEach(id=>{const e=$$(id);if(e)e.selectedIndex=0;});
   renderMis();
 }
@@ -2808,18 +2854,27 @@ function exportMisPDF(){
   if(!window.jspdf){toastMsg('Librer\u00eda PDF no disponible','err');return;}
   const {jsPDF}=window.jspdf;
 
-  // ── Gather filtered list ──────────────────────────────────────────────
+  // ── Gather filtered+sorted list — mirrors renderMis exactly ─────────
   const q=(cv('mq')||'').toLowerCase();
-  const fm=cv('mq-marca'),fg=cv('mq-genero'),ffa=cv('mq-familia'),ex=cv('mq-exist');
-  // Row-2 filters
+  const fm=cv('mq-marca'),fg=cv('mq-genero'),ffa=cv('mq-familia');
+  const fi=cv('mq-inspo'),fu=cv('mq-uso'),fe=cv('mq-estado'),ex=cv('mq-exist');
   const _ptop=$$('mq-top')?.value||'',_pcor=$$('mq-cor')?.value||'';
   const _pfondo=$$('mq-fondo')?.value||'',_pconc=$$('mq-conc')?.value||'';
-  const _pdur=$$('mq-dur')?.value||'',_pproy=$$('mq-proy')?.value||'',_ptemp=$$('mq-temp')?.value||'';
+  const _pdur=$$('mq-dur')?.value||'',_pproy=$$('mq-proy')?.value||'';
+  const _pintens=$$('mq-intens')?.value||'',_ptemp=$$('mq-temp')?.value||'';
   const list=DB.products.filter(p=>{
     if(!p.mio||p.oculto)return false;
     if(fm&&!arr(p.marca).includes(fm))return false;
     if(fg&&p.genero!==fg)return false;
     if(ffa&&!arr(p.familia).includes(ffa))return false;
+    if(fi&&p.imarca!==fi)return false;
+    if(fu&&!arr(p.uso).includes(fu))return false;
+    if(fe==='mio'&&!p.mio)return false;
+    if(fe==='fav'&&!p.fav)return false;
+    if(fe==='pros'&&!p.pros)return false;
+    if(fe==='ver'&&!p.verificado)return false;
+    if(fe==='nv'&&!p.no_vendible)return false;
+    if(fe==='oculto'&&!p.oculto)return false;
     if(ex==='1'&&getExistenciaForProd(p.id)<=0)return false;
     if(_ptop&&!arr(p.top).includes(_ptop))return false;
     if(_pcor&&!arr(p.cor).includes(_pcor))return false;
@@ -2827,11 +2882,30 @@ function exportMisPDF(){
     if(_pconc&&p.concentracion!==_pconc)return false;
     if(_pdur&&p.dur!==_pdur)return false;
     if(_pproy&&p.proy!==_pproy)return false;
+    if(_pintens&&p.intensidad!==_pintens)return false;
     if(_ptemp&&!arr(p.temporada).includes(_ptemp))return false;
-    if(q&&![p.nombre,arr(p.marca).join(' '),p.desc||'',p.inombre||'',
-       ...arr(p.top),...arr(p.cor),...arr(p.fondo)].join(' ').toLowerCase().includes(q))return false;
+    if(q&&![p.clave||'',p.nombre,arr(p.marca).join(' '),p.desc||'',p.inombre||'',p.imarca||'',
+       p.perfume_principal||'',p.intensidad||'',p.extra||'',String(p.precio||''),
+       ...arr(p.top),...arr(p.cor),...arr(p.fondo),p.concentracion||'',
+       p.dur||'',p.proy||'',arr(p.temporada).join(' '),arr(p.uso).join(' '),
+       arr(p.familia).join(' ')].join(' ').toLowerCase().includes(q))return false;
     return true;
   });
+  // Apply same sort as screen
+  const _msf=$$('mis-sort-field')?.value,_msd=$$('mis-sort-dir')?.value||'asc';
+  if(_msf==='gsheet'){
+    const _gsIdx={}; DB.products.forEach((p,i)=>{_gsIdx[p.id]=i;});
+    list.sort((a,b)=>_msd==='asc'?_gsIdx[a.id]-_gsIdx[b.id]:_gsIdx[b.id]-_gsIdx[a.id]);
+  } else if(_msf==='captura'){
+    list.sort((a,b)=>_msd==='asc'?a.id-b.id:b.id-a.id);
+  } else if(_msf){
+    list.sort((a,b)=>{
+      const va=_msf==='precio'?(a.precio||0):_msf==='familia'?arr(a.familia).join():_msf==='marca'?(arr(a.marca)[0]||''):_msf==='imarca'?(a.imarca||''):(a[_msf]||'');
+      const vb=_msf==='precio'?(b.precio||0):_msf==='familia'?arr(b.familia).join():_msf==='marca'?(arr(b.marca)[0]||''):_msf==='imarca'?(b.imarca||''):(b[_msf]||'');
+      if(_msf==='precio')return _msd==='asc'?va-vb:vb-va;
+      return _msd==='asc'?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));
+    });
+  }
   if(!list.length){toastMsg('No hay productos para exportar','err');return;}
   toastMsg('Generando PDF...','ok');
 
@@ -2887,35 +2961,55 @@ function exportMisPDF(){
     const txtX=ML+imgW+7, txtW=W-txtX-MR;
     let cy=imgY;
 
-    // Image background
-    doc.setFillColor(240,235,228);
-    doc.roundedRect(imgX,imgY,imgW,imgH,2,2,'F');
-    const imgSrc=getProdMainImgUrl(p);
-    if(imgSrc){
+    // Helper: add image preserving aspect ratio (contain, centered in box)
+    // addImgContain: uses jsPDF getImageProperties for reliable real dimensions
+    function addImgContain(src,bx,by,bw,bh){
       try{
-        // Convert via canvas for CORS safety
-        doc.addImage(imgSrc,'JPEG',imgX,imgY,imgW,imgH,undefined,'FAST');
+        // Add image first (jsPDF caches it internally)
+        // Then get real pixel dimensions from the cache
+        doc.addImage(src,'JPEG',bx,by,bw,bh,undefined,'FAST');
+        let props;
+        try{props=doc.getImageProperties(src);}catch(pe){props=null;}
+        if(props&&props.width&&props.height){
+          // Redraw at correct proportions, centered in the bounding box
+          const scale=Math.min(bw/props.width,bh/props.height);
+          const dw=props.width*scale,dh=props.height*scale;
+          const dx=bx+(bw-dw)/2,dy=by+(bh-dh)/2;
+          // Erase the stretched version with white
+          doc.setFillColor(255,255,255);
+          doc.rect(bx,by,bw,bh,'F');
+          // Draw correctly proportioned
+          doc.addImage(src,'JPEG',dx,dy,dw,dh,undefined,'FAST');
+        }
+        // if props unavailable, the first addImage stays as-is
       }catch(e){
         doc.setFontSize(7);doc.setTextColor(...MIST);
-        doc.text('[imagen]',imgX+imgW/2,imgY+imgH/2,{align:'center'});
+        doc.text('[img]',bx+bw/2,by+bh/2,{align:'center'});
       }
-    }else{
+    }
+
+    // Image background
+    doc.setFillColor(255,255,255);
+    doc.roundedRect(imgX,imgY,imgW,imgH,2,2,'F');
+    const imgSrc=getProdMainImgUrl(p);
+    if(imgSrc){addImgContain(imgSrc,imgX,imgY,imgW,imgH);}
+    else{
       doc.setFontSize(9);doc.setTextColor(...MIST);
       doc.text('sin imagen',imgX+imgW/2,imgY+imgH/2,{align:'center'});
     }
 
-    // Thumbnails — fill remaining vertical space below main image
+    // Thumbnails — below main image, addImgContain handles proportions
     if(p.imgs&&p.imgs.length>1){
       const thumbs=p.imgs.filter(i=>i.url&&i.url!==imgSrc).slice(0,2);
       const _thumbGap=2;
       const _thumbY=imgY+imgH+_thumbGap;
-      const _slotBottom=slotY+slotH-4;  // 4mm bottom margin
-      const th=Math.max(10,_slotBottom-_thumbY);  // fill remaining space
+      const _slotBottom=slotY+slotH-4;
+      const th=Math.max(10,_slotBottom-_thumbY);
       const tw2=Math.floor((imgW-(thumbs.length-1)*_thumbGap)/thumbs.length);
       thumbs.forEach((img,ei)=>{
         const ex=imgX+ei*(tw2+_thumbGap),ey=_thumbY;
-        doc.setFillColor(230,224,215);doc.roundedRect(ex,ey,tw2,th,1,1,'F');
-        try{doc.addImage(img.url,'JPEG',ex,ey,tw2,th,undefined,'FAST');}catch(e){}
+        doc.setFillColor(255,255,255);doc.roundedRect(ex,ey,tw2,th,1,1,'F');
+        addImgContain(img.url,ex,ey,tw2,th);
       });
     }
 
@@ -2934,36 +3028,42 @@ function exportMisPDF(){
     // Inspiracion
     if(MIS_FIELDS.inspiracion&&p.inombre){
       doc.setFontSize(8);doc.setFont(undefined,'italic');doc.setTextColor(...GOLD);
-      doc.text('\u2248 '+p.imarca+' '+p.inombre,txtX,cy);cy+=4.5;
+      doc.text('~ '+p.imarca+' '+p.inombre,txtX,cy);cy+=4.5;
     }
 
     // Divider
     divider(cy,txtX,W-MR);cy+=4;
 
-    // Description — carefully clipped, no letter-spacing
+    // Description — full text, no clipping
     if(MIS_FIELDS.descripcion&&p.desc){
       secLabel('Descripcion',txtX,cy);cy+=3.5;
-      const maxDescH=Math.min(18, slotY+slotH-cy-30);
-      const used=textBox(p.desc,txtX,cy,txtW,maxDescH,7.5,INK,false);
-      cy+=used+3;
+      doc.setFontSize(7.5);doc.setFont(undefined,'normal');doc.setTextColor(...INK);
+      const _descLines=doc.splitTextToSize(String(p.desc),txtW);
+      const _descLH=7.5*0.4;
+      _descLines.forEach(ln=>{
+        if(cy>slotY+slotH-8){/* overflow onto next slot handled by page layout */}
+        doc.text(ln,txtX,cy);cy+=_descLH;
+      });
+      cy+=2;
     }
 
-    // Piramide
-    if(arr(p.top).length||arr(p.cor).length||arr(p.fondo).length){
-      secLabel('Piramide olfativa',txtX,cy);cy+=3.5;
+    // Notas olfativas — solo si MIS_FIELDS.notas está activo
+    if(MIS_FIELDS.notas&&(arr(p.top).length||arr(p.cor).length||arr(p.fondo).length)){
+      secLabel('Notas olfativas',txtX,cy);cy+=3.5;
       doc.setFontSize(7.5);doc.setFont(undefined,'normal');doc.setTextColor(...INK);
       const maxNotasH=10;
+      const _nLH=3.5;
       if(arr(p.top).length){
         const t=doc.splitTextToSize('S: '+arr(p.top).join(', '),txtW);
-        doc.text(t.slice(0,1),txtX,cy);cy+=3.5;
+        doc.text(t,txtX,cy);cy+=t.length*_nLH;
       }
       if(arr(p.cor).length){
         const t=doc.splitTextToSize('C: '+arr(p.cor).join(', '),txtW);
-        doc.text(t.slice(0,1),txtX,cy);cy+=3.5;
+        doc.text(t,txtX,cy);cy+=t.length*_nLH;
       }
       if(arr(p.fondo).length){
         const t=doc.splitTextToSize('F: '+arr(p.fondo).join(', '),txtW);
-        doc.text(t.slice(0,1),txtX,cy);cy+=3.5;
+        doc.text(t,txtX,cy);cy+=t.length*_nLH;
       }
       cy+=1;
     }
@@ -4304,9 +4404,11 @@ function renderCalPagos(){
 
 function toggleVentaAntForma(){
   const val=parseFloat(($$('v-ant')||{}).value)||0;
-  const row=$$('v-ant-forma-row');
-  if(row)row.style.display=val>0?'block':'none';
-  if(val===0&&$$('v-ant-forma'))$$('v-ant-forma').value='';
+  const sel=$$('v-ant-forma');
+  const fn=$$('v-ant-forma-fn');
+  if(sel){sel.disabled=val<=0;sel.style.opacity=val>0?'1':'.5';}
+  if(fn)fn.style.display=val>0?'block':'none';
+  if(val===0&&sel)sel.value='';
 }
 async function saveVenta(){
   const _btn$$=document.getElementById('btn-save-venta');
@@ -5351,6 +5453,8 @@ function renderReporte(){
       <div class="sc"><div class="sc-l">Total vendido</div><div class="sc-v" style="font-size:14px">${fmt$(_totalVendido)}</div></div>
       <div class="sc sc-ok"><div class="sc-l">Total cobrado</div><div class="sc-v" style="font-size:14px">${fmt$(_totalCobrado)}</div></div>
       <div class="sc sc-err"><div class="sc-l">Total adeudado</div><div class="sc-v" style="font-size:14px">${fmt$(_totalAdeudadoCli)}</div></div>`;
+    // Radio Pagos/Movimientos
+    const _rModo=document.querySelector('input[name="r-cli-modo"]:checked')?.value||'pagos';
     // Summary by client before detail
     // Get all unique payment forms
     const _formasPago=[...new Set(allPagos.map(p=>p.forma||'Sin forma'))];
@@ -5380,6 +5484,43 @@ function renderReporte(){
       +_fmHdrs
       +'<th style="text-align:right">Cobrado</th><th style="text-align:right">Adeudado</th></tr></thead>'
       +'<tbody>'+_cliResumen+'</tbody></table></div></div>';;
+    // Insert radio switcher above the table
+    if(!$$('r-cli-modo-wrap')){
+      const _rm=document.createElement('div');
+      _rm.id='r-cli-modo-wrap';
+      _rm.style.cssText='display:flex;gap:16px;margin:10px 0 6px;font-size:13px';
+      _rm.innerHTML='<label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="r-cli-modo" value="pagos" checked onchange="renderReporte()">Pagos</label>'
+        +'<label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="r-cli-modo" value="movimientos" onchange="renderReporte()">Movimientos</label>';
+      extra.parentNode.insertBefore(_rm,extra);
+    }
+    if(_rModo==='movimientos'){
+      // Build full chronological movement list for selected client(s)
+      const _movs=[];
+      DB.sales.filter(v=>!cliId||v.clienteId===cliId).forEach(v=>{
+        // Pagos
+        (v.pagos||[]).forEach(p=>_movs.push({fecha:p.fecha,tipo:'Pago',cliente:v.cliente,
+          detalle:v.producto+' — '+fmt$(p.monto)+(p.forma?' ('+p.forma+')':''),
+          monto:p.monto,signo:1}));
+        // Ajustes / cambios
+        (v.ajustes||[]).filter(a=>a.tipo!=='entrega').forEach(a=>_movs.push({fecha:a.fecha,tipo:'Ajuste',
+          cliente:v.cliente,detalle:v.producto+' — '+(a.motivo||'Ajuste'),monto:0,signo:0}));
+        // Entregas
+        (v.historial_entregas||[]).forEach(e=>_movs.push({fecha:e.fecha,tipo:'Entrega',
+          cliente:v.cliente,detalle:v.producto+' — '+e.uds+' unidad(es)',monto:0,signo:0}));
+        // Venta registrada
+        _movs.push({fecha:v.fecha,tipo:'Venta',cliente:v.cliente,
+          detalle:v.producto+' × '+v.uds+' = '+fmt$(v.total),monto:v.total,signo:-1});
+      });
+      _movs.sort((a,b)=>(dateToISO(b.fecha)||'').localeCompare(dateToISO(a.fecha)||''));
+      thead.innerHTML='<tr><th>Fecha</th><th>Cliente</th><th>Tipo</th><th>Detalle</th><th style="text-align:right">Monto</th></tr>';
+      tbody.innerHTML=_movs.map(m=>`<tr>
+        <td style="font-size:11px">${fmtDate(m.fecha)}</td>
+        <td style="font-size:12px">${m.cliente||''}</td>
+        <td><span class="tag">${m.tipo}</span></td>
+        <td style="font-size:11px;color:var(--mist)">${m.detalle}</td>
+        <td style="text-align:right;font-weight:500;color:${m.signo>0?'var(--ok)':m.signo<0?'var(--err)':'var(--mist)'}">${m.monto>0?fmt$(m.monto):'—'}</td>
+      </tr>`).join('')||'<tr><td colspan="5"><div class="empty"><p>Sin movimientos</p></div></td></tr>';
+    } else {
     allPagos.sort((a,b)=>(dateToISO(b.fecha)||'').localeCompare(dateToISO(a.fecha)||''));
     thead.innerHTML='<tr><th onclick="srtTbl(this)" style="cursor:pointer">Fecha</th><th onclick="srtTbl(this)" style="cursor:pointer">Cliente</th><th onclick="srtTbl(this)" style="cursor:pointer">Producto</th><th onclick="srtTbl(this)" style="cursor:pointer">Tipo</th><th onclick="srtTbl(this)" style="cursor:pointer">Pres.</th><th onclick="srtTbl(this)" style="text-align:right;cursor:pointer">Monto</th><th onclick="srtTbl(this)" style="cursor:pointer">Tipo pago</th><th onclick="srtTbl(this)" style="cursor:pointer">Forma</th></tr>';
     tbody.innerHTML=allPagos.map(p=>`<tr>
@@ -5389,6 +5530,7 @@ function renderReporte(){
       <td><span class="tag">${p.tipo||'real'}</span></td>
       <td style="font-size:11px">${p.forma||'—'}</td>
     </tr>`).join('')||'<tr><td colspan="5"><div class="empty"><p>Sin datos</p></div></td></tr>';
+    } // end else pagos
   }
   else if(curReporte==='inventario'){
     let list=DB.inventory.filter(i=>{
