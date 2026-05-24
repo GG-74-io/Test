@@ -3094,12 +3094,14 @@ function exportMisPDF(){
       doc.text(attrs.join('  |  '),txtX,cy);cy+=5;
     }
 
-    // Price — label above, amount below — anchored to bottom of slot
-    const priceY=slotY+slotH-5;
-    doc.setFontSize(6.5);doc.setFont(undefined,'normal');doc.setTextColor(...MIST);
-    doc.text('PRECIO DE VENTA',txtX,priceY-5);
-    doc.setFontSize(16);doc.setFont(undefined,'bold');doc.setTextColor(...GOLD);
-    doc.text(fmt$(p.precio),txtX,priceY);
+    // Price — only if MIS_FIELDS.precio is enabled
+    if(MIS_FIELDS.precio){
+      const priceY=slotY+slotH-5;
+      doc.setFontSize(6.5);doc.setFont(undefined,'normal');doc.setTextColor(...MIST);
+      doc.text('PRECIO DE VENTA',txtX,priceY-5);
+      doc.setFontSize(16);doc.setFont(undefined,'bold');doc.setTextColor(...GOLD);
+      doc.text(fmt$(p.precio),txtX,priceY);
+    }
   }
 
   // ── PORTADA ───────────────────────────────────────────────────────────
@@ -3191,7 +3193,7 @@ function exportMisPDF(){
     doc.text('No.',ML,iy);
     doc.text('Nombre',ML+10,iy);
     doc.text('Marca',ML+90,iy);
-    doc.text('Precio',W-MR-12,iy);
+    if(MIS_FIELDS.precio)doc.text('Precio',W-MR-12,iy);
     iy+=3;
     divider(iy,ML,W-MR);iy+=4;
 
@@ -3214,9 +3216,11 @@ function exportMisPDF(){
       doc.text(nomIdx,ML+10,iy);
       const marcaIdx=arr(p.marca)[0]||p.marca||'';
       doc.text(doc.splitTextToSize(marcaIdx,35)[0],ML+90,iy);
-      doc.setTextColor(...GOLD);doc.setFont(undefined,'bold');
-      doc.text(fmt$(p.precio),W-MR,iy,{align:'right'});
-      doc.setTextColor(...INK);doc.setFont(undefined,'normal');
+      if(MIS_FIELDS.precio){
+        doc.setTextColor(...GOLD);doc.setFont(undefined,'bold');
+        doc.text(fmt$(p.precio),W-MR,iy,{align:'right'});
+        doc.setTextColor(...INK);doc.setFont(undefined,'normal');
+      }
       // Precise page calculation: cover(1) + index pages + product pages
       const _idxPgs=Math.ceil(list.length/40);
       const _pageRef=1+_idxPgs+Math.floor(i/2)+1;
