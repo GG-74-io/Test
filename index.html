@@ -40,7 +40,7 @@ h1,h2,h3,h4{font-family:'Playfair Display',serif;font-weight:400}
 #nav .nb.active{background:#111 !important;color:var(--gold2) !important;border-bottom-color:var(--gold) !important}
 #nav .nb:hover:not(.active){background:#555 !important;color:#fff !important}
 /* ── CONTENT ── */
-#content{flex:1;overflow-y:auto;overflow-x:hidden}
+#content{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom,20px)}
 .sec{display:none;padding:15px;animation:fu .22s ease both}
 .sec.active{display:block}
 @keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
@@ -549,7 +549,13 @@ tbody tr:hover td{background:var(--surf2)}
 
     <!-- ═══ REPORTES ═══ -->
     <div id="s-reportes" class="sec">
-      <div class="sh"><div class="sh-l"><h2>Reportes</h2></div></div>
+      <div class="sh">
+        <div class="sh-l"><h2>Reportes</h2></div>
+        <div class="sh-a" style="display:flex;gap:5px">
+          <button class="btn btn-outline btn-sm" onclick="exportReportExcel()" title="Exportar Excel">&#8595; Excel</button>
+          <button class="btn btn-outline btn-sm" onclick="exportReportPDF()" title="Exportar PDF">&#8595; PDF</button>
+        </div>
+      </div>
       <div class="fbar" style="margin-bottom:14px">
         <div class="fbar-r" style="margin-bottom:8px">
           <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x;padding-bottom:3px">
@@ -563,10 +569,6 @@ tbody tr:hover td{background:var(--surf2)}
             <button class="seg-btn" onclick="setReporte('ranking',this)">Rankings</button>
             <button class="seg-btn" onclick="setReporte('cobranza',this)">Proyecci&#243;n cobranza</button>
           </div></div>
-          <div style="margin-left:auto;display:flex;gap:5px">
-            <button class="btn btn-outline btn-sm" onclick="exportReportExcel()" title="Exportar Excel">&#8595; Excel</button>
-            <button class="btn btn-outline btn-sm" onclick="exportReportPDF()" title="Exportar PDF">&#8595; PDF</button>
-          </div>
         </div>
         <!-- Dynamic filter row — shown/hidden per report type -->
         <div id="rep-filters" class="fbar-r" style="margin-top:6px;flex-wrap:wrap;gap:5px">
@@ -2258,15 +2260,12 @@ function updateCatFilters(){
     fuenteSel.innerHTML='<option value="">Fuente</option>'+_fuentes.map(f=>'<option>'+f+'</option>').join('');
   }
   const ms=$$('fq-marca');
-  const mc=[...new Set(DB.products.map(p=>arr(p.marca)[0]||p.marca||''))].filter(Boolean).sort();
-  ms.innerHTML='<option value="">Marca &aacute;rabe</option>'+mc.map(m=>`<option>${m}</option>`).join('');
-  const fs=$$('fq-familia');
-  const fc=[...new Set(DB.products.flatMap(p=>arr(p.familia)))].filter(Boolean).sort();
-  fs.innerHTML='<option value="">Familia</option>'+fc.map(f=>`<option>${f}</option>`).join('');
+  if(ms){const mc=[...new Set(DB.products.map(p=>arr(p.marca)[0]||p.marca||''))].filter(Boolean).sort();
+  ms.innerHTML='<option value="">Marca &aacute;rabe</option>'+mc.map(m=>`<option>${m}</option>`).join('');}
+  // familia y uso: MSD widgets (no select)
   const fi=$$('fq-inspo');
-  const fic=[...new Set(DB.products.map(p=>p.imarca).filter(Boolean))].sort();
-  fi.innerHTML='<option value="">Inspiraci&#243;n</option>'+fic.map(m=>`<option>${m}</option>`).join('');
-  const fu=$$('fq-uso');
+  if(fi){const fic=[...new Set(DB.products.map(p=>p.imarca).filter(Boolean))].sort();
+  fi.innerHTML='<option value="">Inspiraci&#243;n</option>'+fic.map(m=>`<option>${m}</option>`).join('');}
   const fuc=[...new Set(DB.products.flatMap(p=>arr(p.uso)))].filter(Boolean).sort();
   createMSD('fq-uso-msd',fuc.map(v=>({val:v,label:v})),()=>filterCatalog(),'Uso');
   const _fams=[...new Set(DB.products.flatMap(p=>arr(p.familia)))].filter(Boolean).sort();
