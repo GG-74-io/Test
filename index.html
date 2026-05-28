@@ -51,6 +51,17 @@ h1,h2,h3,h4{font-family:'Playfair Display',serif;font-weight:400}
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 /* ── BUTTONS ── */
+.msd{position:relative;display:inline-block}
+.msd-btn{display:flex;align-items:center;gap:4px;padding:4px 8px;font-size:11px;font-family:'Jost',sans-serif;border:.5px solid var(--bord2);border-radius:var(--rs);background:var(--surf);color:var(--ink);cursor:pointer;white-space:nowrap;min-width:90px;line-height:1.4}
+.msd-btn .msd-cnt{background:var(--gold);color:#fff;border-radius:8px;padding:0 5px;font-size:10px;display:none}
+.msd-btn .msd-cnt.has{display:inline}
+.msd-panel{display:none;position:absolute;top:calc(100% + 2px);left:0;z-index:400;background:var(--surf);border:.5px solid var(--bord2);border-radius:var(--rs);box-shadow:0 4px 16px rgba(0,0,0,.15);min-width:180px;max-height:260px;overflow-y:auto;padding:4px 0}
+.msd-panel.open{display:block}
+.msd-item{display:flex;align-items:center;gap:7px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Jost',sans-serif;white-space:nowrap}
+.msd-item:hover{background:var(--surf2)}
+.msd-item input[type=checkbox]{accent-color:var(--gold);flex-shrink:0;cursor:pointer}
+.msd-clear{font-size:11px;color:var(--mist);padding:4px 12px 6px;cursor:pointer;border-top:.5px solid var(--bord);text-align:center}
+.msd-clear:hover{color:var(--err)}
 .btn{padding:6px 13px;border-radius:var(--rs);border:none;cursor:pointer;font-size:12px;font-family:'Jost',sans-serif;font-weight:500;letter-spacing:.3px;transition:all .15s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .btn-gold{background:var(--gold);color:#fff}.btn-gold:hover{background:var(--gold2)}
 .btn-outline{background:transparent;border:1px solid var(--bord2);color:var(--ink3)}.btn-outline:hover{background:var(--surf2)}
@@ -269,9 +280,9 @@ tbody tr:hover td{background:var(--surf2)}
           <select id="fq-fuente" onchange="filterCatalog()"><option value="">Fuente</option></select>
           <select id="fq-marca" onchange="filterCatalog()"><option value="">Marca &aacute;rabe</option></select>
           <select id="fq-genero" onchange="filterCatalog()"><option value="">G&eacute;nero</option><option>Mujer</option><option>Hombre</option><option>Unisex</option></select>
-          <select id="fq-familia" onchange="filterCatalog()"><option value="">Familia</option></select>
+          <div id="fq-familia-msd"></div>
           <select id="fq-inspo" onchange="filterCatalog()"><option value="">Inspiraci&#243;n</option></select>
-          <select id="fq-uso" onchange="filterCatalog()"><option value="">Uso</option></select>
+          <div id="fq-uso-msd"></div>
         <select id="fq-clave" onchange="filterCatalog()"><option value="">Clave</option></select>
           <select id="fq-estado" onchange="filterCatalog()"><option value="">Todos los estados</option><option value="mio">Mi negocio</option><option value="fav">Favorito</option><option value="pros">Prospecto</option><option value="ver">Verificado</option><option value="nv">No vendible</option><option value="oculto">Oculto</option></select>
         </div>
@@ -328,9 +339,9 @@ tbody tr:hover td{background:var(--surf2)}
           <input id="mq" type="text" placeholder="Buscar nombre o marca..." oninput="renderMis()">
           <select id="mq-marca" onchange="renderMis()"><option value="">Marca &aacute;rabe</option></select>
           <select id="mq-genero" onchange="renderMis()"><option value="">G&eacute;nero</option><option>Mujer</option><option>Hombre</option><option>Unisex</option></select>
-          <select id="mq-familia" onchange="renderMis()"><option value="">Familia</option></select>
+          <div id="mq-familia-msd"></div>
           <select id="mq-inspo" onchange="renderMis()"><option value="">Inspiraci&#243;n</option></select>
-          <select id="mq-uso" onchange="renderMis()"><option value="">Uso</option></select>
+          <div id="mq-uso-msd"></div>
           <select id="mq-estado" onchange="renderMis()"><option value="">Todos los estados</option><option value="mio">Mi negocio</option><option value="fav">Favorito</option><option value="pros">Prospecto</option><option value="ver">Verificado</option><option value="nv">No vendible</option><option value="oculto">Oculto</option></select>
           <select id="mq-exist" onchange="renderMis()"><option value="">Todos</option><option value="1">Con existencia</option></select>
         </div>
@@ -430,11 +441,13 @@ tbody tr:hover td{background:var(--surf2)}
           <select id="iv-marca" onchange="renderInv()"><option value="">Marca árabe</option></select>
           <select id="iv-tipo" onchange="renderInv()"><option value="">Tipo</option></select>
           <select id="iv-pres" onchange="renderInv()"><option value="">Presentación</option></select>
+          <select id="iv-noventa" onchange="renderInv()"><option value="">No venta: todos</option><option value="0">Solo vendibles</option><option value="1">Solo no-venta</option></select>
           <select id="iv-estado" onchange="renderInv()"><option value="">Todo el stock</option><option value="disponible">Con existencia</option><option value="consig">Consignación</option><option value="sinstock">Sin stock</option></select>
           <button class="btn btn-outline btn-sm" onclick="clearInvFiltros()">Limpiar</button>
         </div></div>
       <div class="tw"><table id="inv-tbl">
         <thead><tr>
+          <th title="No venta">NV</th>
           <th onclick="srt('inv-tbl',0)">Perfume Principal</th>
           <th onclick="srt('inv-tbl',1)">Marca</th>
           <th onclick="srt('inv-tbl',2)">Tipo</th>
@@ -507,7 +520,8 @@ tbody tr:hover td{background:var(--surf2)}
           <select id="v-filtro-sel" onchange="aplicarFiltroV()" style="display:none"><option value="">-- Selecciona --</option></select>
         </div>
         <div class="fbar-r">
-          <select id="vf-estado" onchange="renderVentas()"><option value="">Todos los estados</option><option value="pagado">Pagado</option><option value="parcial">Parcial</option><option value="sinpagos">Sin pagos</option></select>
+          <select id="vf-estado" onchange="renderVentas()"><option value="">Estados de Pago</option><option value="nopagado">No pagado</option><option value="pagado">Pagado</option><option value="parcial">Parcial</option><option value="sinpagos">Sin pagos</option></select>
+          <select id="vf-entrega" onchange="renderVentas()"><option value="">Estados de Entrega</option><option value="noentregado">No entregado</option><option value="entregado">Entregado</option><option value="parcial">Parcial</option><option value="sinEntregar">Sin Entregar</option></select>
           <input type="date" id="vf-desde" onchange="renderVentas()" placeholder="Desde">
           <input type="date" id="vf-hasta" onchange="renderVentas()" placeholder="Hasta">
           <button class="btn btn-outline btn-sm" onclick="clearVentasFiltros()">Limpiar</button>
@@ -549,6 +563,10 @@ tbody tr:hover td{background:var(--surf2)}
             <button class="seg-btn" onclick="setReporte('ranking',this)">Rankings</button>
             <button class="seg-btn" onclick="setReporte('cobranza',this)">Proyecci&#243;n cobranza</button>
           </div></div>
+          <div style="margin-left:auto;display:flex;gap:5px">
+            <button class="btn btn-outline btn-sm" onclick="exportReportExcel()" title="Exportar Excel">&#8595; Excel</button>
+            <button class="btn btn-outline btn-sm" onclick="exportReportPDF()" title="Exportar PDF">&#8595; PDF</button>
+          </div>
         </div>
         <!-- Dynamic filter row — shown/hidden per report type -->
         <div id="rep-filters" class="fbar-r" style="margin-top:6px;flex-wrap:wrap;gap:5px">
@@ -723,6 +741,10 @@ tbody tr:hover td{background:var(--surf2)}
     <div class="fg"><label>Notas</label><input type="text" id="inv-nota" placeholder="Observaciones..."></div>
   </div>
   <div class="fg"><label>Motivo del ajuste *</label><input type="text" id="inv-motivo" placeholder="Carga inicial, ajuste por merma..."></div>
+  <div class="t-row" onclick="toggleNoVenta()" style="margin:8px 0">
+    <div class="tw2" id="noventa-tw2"><div class="tk"></div></div>
+    <span style="font-size:13px">No venta <span style="font-size:11px;color:var(--mist)">(excluir del selector de ventas)</span></span>
+  </div>
   <div class="sdiv"><span>Consignaci&#243;n</span></div>
   <div class="t-row" onclick="toggleConsig()">
     <div class="tw2" id="consig-tw2"><div class="tk"></div></div>
@@ -1508,6 +1530,7 @@ function normalizeInv(i){
   return {id:i.id,pid:i.pid,nombre:i.nombre||'',marca:i.marca||'',
     tipo:i.tipo||'Perfume',pres:i.pres||'',
     stock:num(i.stock),costo:num(i.costo),precio:num(i.precio),nota:i.nota||'',
+    no_venta:boolVal(i.no_venta),
     consig:boolVal(i.consig),cuds:num(i.cuds),cprecio:num(i.cprecio),cprov:i.cprov||'',
     ccom:num(i.ccom),ccond:i.ccond||'',cvenc:i.cvenc||'',
     comprometidas:num(i.comprometidas),ajustes:parseJSON(i.ajustes,[])};
@@ -1621,6 +1644,7 @@ function buildExportData(){
     inventario:DB.inventory.map(i=>({
       id:i.id,pid:i.pid,nombre:i.nombre,marca:i.marca,tipo:i.tipo,pres:i.pres,
       stock:i.stock,costo:i.costo,precio:i.precio,nota:i.nota||'',
+      no_venta:i.no_venta?'TRUE':'FALSE',
       consig:i.consig?'TRUE':'FALSE',cuds:i.cuds||0,cprecio:i.cprecio||0,
       cprov:i.cprov||'',ccom:i.ccom||0,ccond:i.ccond||'',cvenc:i.cvenc||'',
       comprometidas:i.comprometidas||0
@@ -1840,8 +1864,8 @@ function srt(tId,ci){
 function openM(id){
   if(id==='m-imagenes')renderImgBatch();
   if(id==='m-compra-new'){
-    $$('cp-prov').innerHTML='<option value="">Selecciona...</option>'+DB.providers.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');
-    $$('cp-prod').innerHTML='<option value="">Selecciona...</option>'+DB.products.map(p=>`<option value="${p.id}">${p.nombre} (${arr(p.marca)[0]||p.marca})</option>`).join('');
+    fillSearchableSelect('cp-prov',DB.providers,p=>p.id,p=>p.nombre,'Selecciona proveedor...');
+    fillSearchableSelect('cp-prod',DB.products,p=>p.id,p=>(p.clave?p.clave+' — ':'')+p.nombre+' ('+( arr(p.marca)[0]||p.marca)+')','Selecciona producto...');
     $$('cp-pres').innerHTML='<option value="">--</option>'+LISTS.presentaciones.map(v=>`<option>${v}</option>`).join('');
     $$('cp-tipo').innerHTML=(LISTS.tipos_producto||['Perfume','Decant','Tester']).map(v=>`<option>${v}</option>`).join('');
     $$('cp-anticipo-forma').innerHTML='<option value="">-- Forma de pago --</option>'+(LISTS.formas_pago||[]).map(f=>`<option>${f}</option>`).join('');
@@ -1858,7 +1882,7 @@ function openM(id){
     try{
       const _vFecha=$$('v-fecha');if(_vFecha)_vFecha.value=TODAY_ISO;
       const _vFp=$$('v-fprimer');if(_vFp){const d=new Date();d.setDate(d.getDate()+15);_vFp.value=d.toISOString().split('T')[0];}
-      $$('v-cli').innerHTML='<option value="">Selecciona...</option>'+DB.clients.map(c=>`<option value="${c.id}">${c.nombre}</option>`).join('');
+      fillSearchableSelect('v-cli',DB.clients,cl=>cl.id,cl=>cl.nombre,'Selecciona cliente...');
       buildVentaProductos();
       sv('v-uds','1');sv('v-desc','0');sv('v-ant','0');sv('v-quinc','200');sv('v-precio-u','950');sv('v-obs','');
       const _vaf=$$('v-ant-forma');if(_vaf){_vaf.innerHTML='<option value="">-- Selecciona --</option>'+(LISTS.formas_pago||[]).map(f=>`<option>${f}</option>`).join('');}
@@ -2244,7 +2268,9 @@ function updateCatFilters(){
   fi.innerHTML='<option value="">Inspiraci&#243;n</option>'+fic.map(m=>`<option>${m}</option>`).join('');
   const fu=$$('fq-uso');
   const fuc=[...new Set(DB.products.flatMap(p=>arr(p.uso)))].filter(Boolean).sort();
-  fu.innerHTML='<option value="">Uso</option>'+fuc.map(u=>`<option>${u}</option>`).join('');
+  createMSD('fq-uso-msd',fuc.map(v=>({val:v,label:v})),()=>filterCatalog(),'Uso');
+  const _fams=[...new Set(DB.products.flatMap(p=>arr(p.familia)))].filter(Boolean).sort();
+  createMSD('fq-familia-msd',_fams.map(v=>({val:v,label:v})),()=>filterCatalog(),'Familia');
   const fclvEl=$$('fq-clave');
   if(fclvEl){const claves=[...new Set(DB.products.filter(p=>p.clave).map(p=>p.clave))].sort();fclvEl.innerHTML='<option value="">Clave</option>'+claves.map(v=>`<option>${v}</option>`).join('');}
   const fillSel=(id,vals,lbl)=>{
@@ -2266,7 +2292,9 @@ function updateCatFilters(){
 }
 function filterCatalog(){
   const q=(cv('q')||'').toLowerCase();
-  const ff=cv('fq-fuente'),fm=cv('fq-marca'),fg=cv('fq-genero'),ffa=cv('fq-familia'),fe=cv('fq-estado'),fi=cv('fq-inspo'),fu=cv('fq-uso'),fclv=cv('fq-clave');
+  const ff=cv('fq-fuente'),fm=cv('fq-marca'),fg=cv('fq-genero'),fe=cv('fq-estado'),fi=cv('fq-inspo'),fclv=cv('fq-clave');
+  const _ffas=getMSDValues('fq-familia-msd');  // multi-select familia
+  const _fusos=getMSDValues('fq-uso-msd');     // multi-select uso
   const ftop=$$('fq-top')?.value||'',fcor=$$('fq-cor')?.value||'';
   const ffondo=$$('fq-fondo')?.value||'',fconc=$$('fq-conc')?.value||'';
   const fdur=$$('fq-dur')?.value||'',fproy=$$('fq-proy')?.value||'';
@@ -2276,9 +2304,9 @@ function filterCatalog(){
     if(ff&&p.fuente!==ff)return false;
     if(fm&&!arr(p.marca).includes(fm))return false;
     if(fg&&p.genero!==fg)return false;
-    if(ffa&&!arr(p.familia).includes(ffa))return false;
+    if(_ffas.length&&!arr(p.familia).some(f=>_ffas.includes(f)))return false;
     if(fi&&p.imarca!==fi)return false;
-    if(fu&&!arr(p.uso).includes(fu))return false;
+    if(_fusos.length&&!arr(p.uso).some(u=>_fusos.includes(u)))return false;
     if(fe==='mio'&&!p.mio)return false;
     if(fe==='fav'&&!p.fav)return false;
     if(fe==='pros'&&!p.pros)return false;
@@ -2315,7 +2343,8 @@ function filterCatalog(){
 }
 function clearCatFilter(){
   sv('q','');
-  ['fq-clave','fq-fuente','fq-marca','fq-genero','fq-familia','fq-estado','fq-inspo','fq-uso',
+  ['fq-familia-msd','fq-uso-msd'].forEach(id=>{_msdClear(id);});
+  ['fq-clave','fq-fuente','fq-marca','fq-genero','fq-estado','fq-inspo',
    'fq-top','fq-cor','fq-fondo','fq-conc','fq-dur','fq-proy','fq-intens','fq-temp',
    'cat-sort-field']
   .forEach(id=>{const e=$$(id);if(e)e.selectedIndex=0;});
@@ -2456,6 +2485,77 @@ function detailSwipeEnd(e){
 }
 function shareDetailWA(){
   const p=DB.products.find(x=>x.id===curDetailId);if(!p)return;
+  // Show confirmation modal with field selection
+  openWAConfirm(p);
+}
+function openWAConfirm(p){
+  const _waFields=[
+    {key:'genero',label:'Género',val:()=>p.genero},
+    {key:'marca',label:'Marca árabe',val:()=>arr(p.marca)[0]||p.marca},
+    {key:'familia',label:'Familia',val:()=>arr(p.familia).join(', ')},
+    {key:'uso',label:'Uso',val:()=>arr(p.uso).join(', ')},
+    {key:'precio',label:'Precio',val:()=>fmt$(p.precio)},
+    {key:'descripcion',label:'Descripción',val:()=>p.desc},
+    {key:'inspiracion',label:'Inspiración',val:()=>p.imarca?p.imarca+' '+p.inombre:''},
+    {key:'perfume_principal',label:'Perfume principal',val:()=>p.perfume_principal},
+    {key:'temporada',label:'Temporada',val:()=>arr(p.temporada).join(', ')},
+    {key:'concentracion',label:'Concentración',val:()=>p.concentracion},
+    {key:'duracion',label:'Duración',val:()=>p.dur},
+    {key:'proyeccion',label:'Proyección',val:()=>p.proy},
+    {key:'intensidad',label:'Intensidad',val:()=>p.intensidad},
+    {key:'notas',label:'Notas olfativas',val:()=>(arr(p.top).length||arr(p.cor).length||arr(p.fondo).length)?'S/C/F':''},
+  ];
+  const fieldsHtml=_waFields.map(f=>{
+    const chk=MIS_FIELDS[f.key]?'checked':'';
+    return `<label style="display:flex;gap:6px;align-items:center;font-size:12px;margin:3px 0">`
+      +`<input type="checkbox" id="wa-fld-${f.key}" ${chk}> ${f.label}`
+      +(f.val()?` <span style="color:var(--mist);font-size:11px"> — ${String(f.val()).slice(0,40)}</span>`:'')
+      +'</label>';
+  }).join('');
+  const html=`<div style="max-height:60vh;overflow-y:auto">`
+    +`<p style="font-size:13px;margin-bottom:10px">Selecciona los campos a incluir en el mensaje:</p>`
+    +fieldsHtml+`</div>`
+    +`<div class="mfoot"><button class="btn btn-outline" onclick="closeM('m-wa-confirm')">Cancelar</button>`
+    +`<button class="btn btn-gold" onclick="enviarWAConFiltros()">Enviar WA</button></div>`;
+  // Reuse generic modal
+  let mwc=$$('m-wa-confirm');
+  if(!mwc){mwc=document.createElement('div');mwc.id='m-wa-confirm';mwc.className='mbg';
+    mwc.innerHTML='<div class="modal" style="width:min(480px,100%)"><div class="mhdr"><h3>Enviar por WhatsApp</h3><button class="mx" onclick="closeM(\'m-wa-confirm\')">&#10005;</button></div><div id="m-wa-body"></div></div>';
+    document.body.appendChild(mwc);}
+  const body=$$('m-wa-body');if(body)body.innerHTML=html;
+  mwc._prod=p;
+  openM('m-wa-confirm');
+}
+function enviarWAConFiltros(){
+  const mwc=$$('m-wa-confirm');const p=mwc&&mwc._prod;if(!p)return;
+  const marca=arr(p.marca)[0]||p.marca||'';
+  let msg='\u2022 *'+p.nombre+'*\n';
+  msg+='_'+marca+(p.concentracion?' \u00b7 '+p.concentracion:'')+'_\n';
+  const _chk=id=>$$('wa-fld-'+id)?.checked;
+  if(_chk('inspiracion')&&p.inombre)msg+='\uD83D\uDD0E Inspirado en: '+p.imarca+' '+p.inombre+'\n';
+  if(_chk('genero')&&p.genero)msg+='\n\uD83D\uDC64 Género: '+p.genero;
+  if(_chk('familia')&&arr(p.familia).length)msg+='\n\uD83C\uDF38 Familia: '+arr(p.familia).join(', ');
+  if(_chk('uso')&&arr(p.uso).length)msg+='\n\u2600\uFE0F Uso: '+arr(p.uso).join(', ');
+  if(_chk('temporada')&&arr(p.temporada).length)msg+='\n\uD83C\uDF42 Temporada: '+arr(p.temporada).join(', ');
+  if(_chk('descripcion')&&p.desc)msg+='\n\n'+p.desc;
+  if(_chk('perfume_principal')&&p.perfume_principal)msg+='\n\uD83D\uDD39 Perfume principal: '+p.perfume_principal;
+  if(_chk('notas')&&(arr(p.top).length||arr(p.cor).length||arr(p.fondo).length)){
+    msg+='\n\n\uD83C\uDF3F *Notas olfativas*';
+    if(arr(p.top).length)msg+='\nSalida: '+arr(p.top).join(', ');
+    if(arr(p.cor).length)msg+='\nCorazón: '+arr(p.cor).join(', ');
+    if(arr(p.fondo).length)msg+='\nFondo: '+arr(p.fondo).join(', ');
+  }
+  if(_chk('duracion')&&p.dur)msg+='\n\n\u23F1 Duración: '+p.dur;
+  if(_chk('proyeccion')&&p.proy)msg+=' \u2022 Proyección: '+p.proy;
+  if(_chk('intensidad')&&p.intensidad)msg+='\n\uD83D\uDD25 Intensidad: '+p.intensidad;
+  if(_chk('precio')&&p.precio)msg+='\n\n\uD83D\uDCB0 *Precio: '+fmt$(p.precio)+'*';
+  const imgs=(p.imgs&&p.imgs.length)?p.imgs:(p.img_url?[{url:p.img_url}]:[]);
+  if(imgs.length)msg+='\n\n\uD83D\uDCF7 Imágenes:\n'+imgs.slice(0,3).map((img,i)=>'  '+(i+1)+'. '+img.url).join('\n');
+  msg+='\n\n\u272A _Aura de Oriente_';
+  closeM('m-wa-confirm');
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+function _shareDetailWA_original(){
   const marca=arr(p.marca)[0]||p.marca||'';
   let msg='';
   msg+='\u2022 *'+p.nombre+'*\n';
@@ -2612,7 +2712,7 @@ async function handleBatchImg(e,id){
 // ═══════════════════════════════════════════════════════════
 //  MIS PRODUCTOS
 // ═══════════════════════════════════════════════════════════
-const MIS_FIELDS={genero:false,marca:false,nombre:true,familia:true,uso:true,precio:true,descripcion:false,inspiracion:true,perfume_principal:false,temporada:false,concentracion:false,duracion:false,proyeccion:false,intensidad:false,notas:false};
+const MIS_FIELDS={genero:true,marca:true,nombre:true,familia:true,uso:true,precio:true,descripcion:true,inspiracion:true,perfume_principal:true,temporada:false,concentracion:false,duracion:false,proyeccion:false,intensidad:false,notas:false};
 const MIS_LABELS={genero:'Género',marca:'Marca árabe',nombre:'Nombre',familia:'Familia',uso:'Uso',precio:'Precio',descripcion:'Descripción',inspiracion:'Inspiración',perfume_principal:'Perfume Principal',temporada:'Temporada',concentracion:'Concentración',duracion:'Duración',proyeccion:'Proyección',intensidad:'Intensidad',notas:'Notas olfativas'};
 
 
@@ -2710,9 +2810,11 @@ function populateMisFilters(){
     el.innerHTML='<option value="">'+lbl+'</option>'+[...new Set(vals)].filter(Boolean).sort().map(v=>`<option>${v}</option>`).join('');
     if(prev)el.value=prev;};
   _fm('mq-marca',_mp.map(p=>arr(p.marca)[0]||p.marca||''),'Marca árabe');
-  _fm('mq-familia',_mp.flatMap(p=>arr(p.familia)),'Familia');
+  const _mFams=[...new Set(_mp.flatMap(p=>arr(p.familia)))].filter(Boolean).sort();
+  createMSD('mq-familia-msd',_mFams.map(v=>({val:v,label:v})),()=>renderMis(),'Familia');
   _fm('mq-inspo',_mp.filter(p=>p.imarca).map(p=>p.imarca),'Inspiración');
-  _fm('mq-uso',_mp.flatMap(p=>arr(p.uso)),'Uso');
+  const _mUsos=[...new Set(_mp.flatMap(p=>arr(p.uso)))].filter(Boolean).sort();
+  createMSD('mq-uso-msd',_mUsos.map(v=>({val:v,label:v})),()=>renderMis(),'Uso');
   _fm('mq-conc',_mp.map(p=>p.concentracion||''),'Concentración');
   _fm('mq-dur',_mp.map(p=>p.dur||''),'Duración');
   _fm('mq-proy',_mp.map(p=>p.proy||''),'Proyección');
@@ -2728,14 +2830,16 @@ function getExistencia(i){return(i.stock||0)+(i.cuds||0)-(i.comprometidas||0);}
 
 function renderMis(){
   populateMisFilters();
-  const q=(cv('mq')||'').toLowerCase(),fm=cv('mq-marca'),fg=cv('mq-genero'),ffa=cv('mq-familia'),fi=cv('mq-inspo'),fu=cv('mq-uso'),fe=cv('mq-estado'),ex=cv('mq-exist');
+  const q=(cv('mq')||'').toLowerCase(),fm=cv('mq-marca'),fg=cv('mq-genero'),fi=cv('mq-inspo'),fe=cv('mq-estado'),ex=cv('mq-exist');
+  const _mFasFlt=getMSDValues('mq-familia-msd');
+  const _mUsosFlt=getMSDValues('mq-uso-msd');
   const list=DB.products.filter(p=>{
     if(!p.mio||p.oculto)return false;
     if(fm&&!arr(p.marca).includes(fm))return false;
     if(fg&&p.genero!==fg)return false;
-    if(ffa&&!arr(p.familia).includes(ffa))return false;
+    if(_ffas.length&&!arr(p.familia).some(f=>_ffas.includes(f)))return false;
     if(fi&&p.imarca!==fi)return false;
-    if(fu&&!arr(p.uso).includes(fu))return false;
+    if(_fusos.length&&!arr(p.uso).some(u=>_fusos.includes(u)))return false;
     if(fe==='mio'&&!p.mio)return false;
     if(fe==='fav'&&!p.fav)return false;
     if(fe==='pros'&&!p.pros)return false;
@@ -2844,7 +2948,8 @@ function clearMisSelection(){
 }
 function clearMisFilter(){
   sv('mq','');
-  ['mq-marca','mq-genero','mq-familia','mq-inspo','mq-uso','mq-estado','mq-exist',
+  ['mq-familia-msd','mq-uso-msd'].forEach(id=>{_msdClear(id);});
+  ['mq-marca','mq-genero','mq-inspo','mq-estado','mq-exist',
    'mq-top','mq-cor','mq-fondo','mq-conc','mq-dur','mq-proy','mq-intens','mq-temp',
    'mis-sort-field','mis-sort-dir']
   .forEach(id=>{const e=$$(id);if(e)e.selectedIndex=0;});
@@ -2857,8 +2962,9 @@ function exportMisPDF(){
 
   // ── Gather filtered+sorted list — mirrors renderMis exactly ─────────
   const q=(cv('mq')||'').toLowerCase();
-  const fm=cv('mq-marca'),fg=cv('mq-genero'),ffa=cv('mq-familia');
-  const fi=cv('mq-inspo'),fu=cv('mq-uso'),fe=cv('mq-estado'),ex=cv('mq-exist');
+  const fm=cv('mq-marca'),fg=cv('mq-genero'),fi=cv('mq-inspo'),fe=cv('mq-estado'),ex=cv('mq-exist');
+  const _mFasFlt=getMSDValues('mq-familia-msd');
+  const _mUsosFlt=getMSDValues('mq-uso-msd');
   const _ptop=$$('mq-top')?.value||'',_pcor=$$('mq-cor')?.value||'';
   const _pfondo=$$('mq-fondo')?.value||'',_pconc=$$('mq-conc')?.value||'';
   const _pdur=$$('mq-dur')?.value||'',_pproy=$$('mq-proy')?.value||'';
@@ -2867,9 +2973,9 @@ function exportMisPDF(){
     if(!p.mio||p.oculto)return false;
     if(fm&&!arr(p.marca).includes(fm))return false;
     if(fg&&p.genero!==fg)return false;
-    if(ffa&&!arr(p.familia).includes(ffa))return false;
+    if(_ffas.length&&!arr(p.familia).some(f=>_ffas.includes(f)))return false;
     if(fi&&p.imarca!==fi)return false;
-    if(fu&&!arr(p.uso).includes(fu))return false;
+    if(_fusos.length&&!arr(p.uso).some(u=>_fusos.includes(u)))return false;
     if(fe==='mio'&&!p.mio)return false;
     if(fe==='fav'&&!p.fav)return false;
     if(fe==='pros'&&!p.pros)return false;
@@ -3717,7 +3823,11 @@ async function testUpsertImagen(prodId){
 // ═══════════════════════════════════════════════════════════
 //  INVENTARIO
 // ═══════════════════════════════════════════════════════════
-let consigOn=false;
+let consigOn=false,noVentaOn=false;
+function toggleNoVenta(){
+  noVentaOn=!noVentaOn;
+  const tw=$$('noventa-tw2');if(tw)tw.classList.toggle('on',noVentaOn);
+}
 
 function getComprometidas(invId){
   return DB.sales.filter(s=>s.invId===invId&&(s.entregadas||0)<s.uds).reduce((a,s)=>a+(s.uds-(s.entregadas||0)),0)
@@ -3727,7 +3837,7 @@ function getComprometidas(invId){
          },0);
 }
 
-function clearInvFiltros(){sv('iv-q','');['iv-prod','iv-marca','iv-tipo','iv-pres','iv-estado'].forEach(id=>{const e=$$(id);if(e)e.selectedIndex=0;});renderInv();}
+function clearInvFiltros(){sv('iv-q','');['iv-prod','iv-marca','iv-tipo','iv-pres','iv-noventa','iv-estado'].forEach(id=>{const e=$$(id);if(e)e.selectedIndex=0;});renderInv();}
 function populateInvFilters(){
   const mset=new Set(),uset=new Set();
   DB.inventory.forEach(i=>{
@@ -3752,6 +3862,9 @@ function populateInvFilters(){
 }
 function renderInv(){
   populateInvFilters();
+  // Defaults on first load
+  const _nvEl=$$('iv-noventa');if(_nvEl&&!_nvEl._initDone){_nvEl.value='0';_nvEl._initDone=true;}
+  const _estEl=$$('iv-estado');if(_estEl&&!_estEl._initDone){_estEl.value='disponible';_estEl._initDone=true;}
   const _q=($$('iv-q')?.value||'').toLowerCase();
   const _pr=$$('iv-prod')?.value;
   const _m=$$('iv-marca')?.value,_tp=$$('iv-tipo')?.value,_ps=$$('iv-pres')?.value,_e=$$('iv-estado')?.value;
@@ -3762,6 +3875,9 @@ function renderInv(){
     if(_m&&(arr(i.marca)[0]||i.marca||'')!==_m)return false;
     if(_tp&&i.tipo!==_tp)return false;
     if(_ps&&i.pres!==_ps)return false;
+    const _nv=$$('iv-noventa')?.value;
+    if(_nv==='0'&&i.no_venta)return false;
+    if(_nv==='1'&&!i.no_venta)return false;
     if(_e==='disponible'&&getExistencia(i)<=0)return false;
     if(_e==='sinstock'&&getExistencia(i)>0)return false;
     if(_e==='consig'&&!i.consig)return false;
@@ -3777,6 +3893,7 @@ function renderInv(){
     let vb='';
     if(i.consig&&i.cvenc){const dd=diffD(i.cvenc);if(dd!==null){if(dd<0)vb='<span class="pill p-err" style="font-size:9px;margin-left:3px">Vencida</span>';else if(dd<=7)vb=`<span class="pill p-warn" style="font-size:9px;margin-left:3px">Vence ${dd}d</span>`;}}
     rows.push(`<tr>
+      <td style="text-align:center">${i.no_venta?'<span class="pill p-err" style="font-size:9px">NV</span>':''}</td>
       <td><strong>${i.nombre}</strong></td>
       <td style="font-size:11px;color:var(--mist)">${i.marca||''}</td>
       <td><span class="tag">${i.tipo}</span></td>
@@ -3792,7 +3909,7 @@ function renderInv(){
       </td>
     </tr>`);
   });
-  $$('inv-tbody').innerHTML=rows.join('')||'<tr><td colspan="10"><div class="empty"><p>Sin inventario</p></div></td></tr>';
+  $$('inv-tbody').innerHTML=rows.join('')||'<tr><td colspan="11"><div class="empty"><p>Sin inventario</p></div></td></tr>';
   $$('iv-c').textContent=fmt$(vc);$$('iv-v').textContent=fmt$(vv);
   $$('iv-p').textContent=prop;$$('iv-k').textContent=cons;$$('iv-m').textContent=comp;$$('iv-e').textContent=exist;
 }
@@ -3806,6 +3923,7 @@ function openAddInv(){
   $$('inv-tipo').innerHTML=(LISTS.tipos_producto||['Perfume','Decant','Tester']).map(v=>`<option>${v}</option>`).join('');
   sv('inv-stock','0');sv('inv-costo','0');sv('inv-precio','950');sv('inv-nota','');sv('inv-motivo','');
   consigOn=false;$$('consig-tw2').classList.remove('on');$$('consig-form').style.display='none';
+  noVentaOn=false;if($$('noventa-tw2'))$$('noventa-tw2').classList.remove('on');
   sv('inv-cuds','0');sv('inv-cprecio','950');sv('inv-cprov','');sv('inv-ccom','20');sv('inv-ccond','');sv('inv-cvenc','');
   $$('m-inv').classList.add('open');
 }
@@ -3820,6 +3938,8 @@ function editInv(id){
   $$('inv-tipo').innerHTML=(LISTS.tipos_producto||['Perfume','Decant','Tester']).map(v=>`<option>${v}</option>`).join('');
   $$('inv-prod').value=i.pid;$$('inv-tipo').value=i.tipo;$$('inv-pres').value=i.pres;
   sv('inv-stock',i.stock);sv('inv-costo',i.costo);sv('inv-precio',i.precio);sv('inv-nota',i.nota||'');sv('inv-motivo','');
+  noVentaOn=!!i.no_venta;
+  if($$('noventa-tw2'))$$('noventa-tw2').classList.toggle('on',noVentaOn);
   consigOn=!!(i.consig);
   $$('consig-tw2').classList.toggle('on',consigOn);$$('consig-form').style.display=consigOn?'block':'none';
   if(consigOn){sv('inv-cuds',i.cuds||0);sv('inv-cprecio',i.cprecio||950);sv('inv-cprov',i.cprov||'');sv('inv-ccom',i.ccom||20);sv('inv-ccond',i.ccond||'');(function(){const _d=dateToISO(i.cvenc||'');if($$('inv-cvenc'))$$('inv-cvenc').value=_d||'';})();}
@@ -3856,7 +3976,7 @@ async function saveInv(){
     const stockAntes=i.stock;
     i.pid=pid;i.nombre=prod.nombre;i.marca=arr(prod.marca)[0]||prod.marca||'';
     i.tipo=cv('inv-tipo');i.pres=cv('inv-pres');
-    i.stock=stock;i.costo=costo;i.precio=precio;i.nota=cv('inv-nota');
+    i.stock=stock;i.costo=costo;i.precio=precio;i.nota=cv('inv-nota');i.no_venta=noVentaOn;
     i.consig=consigOn;
     if(consigOn){i.cuds=parseInt(($$('inv-cuds')||{}).value)||0;i.cprecio=parseFloat(($$('inv-cprecio')||{}).value)||0;i.cprov=cv('inv-cprov');i.ccom=parseFloat(($$('inv-ccom')||{}).value)||0;i.ccond=cv('inv-ccond');i.cvenc=cv('inv-cvenc');}else{i.cuds=0;i.cprecio=0;i.cprov='';i.ccom=0;i.ccond='';i.cvenc='';}
     if(!i.ajustes)i.ajustes=[];
@@ -3868,6 +3988,7 @@ async function saveInv(){
     const inv={id:NID++,pid,nombre:prod.nombre,marca:arr(prod.marca)[0]||prod.marca||'',
       tipo:cv('inv-tipo'),pres:cv('inv-pres'),
       stock,costo,precio,nota:cv('inv-nota'),
+      no_venta:noVentaOn,
       consig:consigOn,
       cuds,cprecio:consigOn?(parseFloat(($$('inv-cprecio')||{}).value)||0):0,
       cprov:consigOn?cv('inv-cprov'):'',
@@ -3931,6 +4052,8 @@ function calcTotalCompra(){
 
 function clearComprasFiltros(){sv('cp-q','');sv('cp-desde','');sv('cp-hasta','');const e=$$('cp-estado');if(e)e.selectedIndex=0;renderCompras();}
 function renderCompras(){
+  // Default filter: pendiente on first load
+  const _cpEstEl=$$('cp-estado');if(_cpEstEl&&!_cpEstEl._initDone){_cpEstEl.value='pendiente';_cpEstEl._initDone=true;}
   const q=($$('cp-q')?.value||'').toLowerCase();
   const fd=$$('cp-desde')?.value,fh=$$('cp-hasta')?.value,fe=$$('cp-estado')?.value;
   let tot=0,rec=0,pend=0;
@@ -3971,6 +4094,67 @@ function renderCompras(){
   $$('cp-tot').textContent=tot;$$('cp-rec').textContent=rec;$$('cp-pend').textContent=pend;
 }
 
+// Searchable select helper — renders <select> with sorted, searchable options
+// ─── Multi-Select Dropdown helper ───────────────────────────────────
+// createMSD(containerId, options:[{val,label}], onChange, placeholder)
+function createMSD(cid,options,onChange,placeholder){
+  const wrap=$$(cid);if(!wrap)return;
+  wrap.className='msd';
+  const opts=options.map(o=>{
+    const checked='';
+    return `<label class="msd-item"><input type="checkbox" value="${o.val}" onchange="_msdChange('${cid}')">${o.label}</label>`;
+  }).join('');
+  wrap.innerHTML=`<button class="msd-btn" onclick="_msdToggle('${cid}')" type="button">
+    <span class="msd-lbl">${placeholder||'Todos'}</span>
+    <span class="msd-cnt"></span>
+    <span style="margin-left:auto;font-size:9px;">&#9660;</span></button>
+  <div class="msd-panel" id="${cid}-panel">
+    ${opts}
+    <div class="msd-clear" onclick="_msdClear('${cid}')">&#10005; Limpiar selección</div>
+  </div>`;
+  wrap._onChange=onChange;
+  wrap._placeholder=placeholder||'Todos';
+}
+function _msdToggle(cid){
+  const p=$$(`${cid}-panel`);if(!p)return;
+  const wasOpen=p.classList.contains('open');
+  // Close all open panels
+  document.querySelectorAll('.msd-panel.open').forEach(pp=>pp.classList.remove('open'));
+  if(!wasOpen)p.classList.add('open');
+}
+function _msdChange(cid){
+  const wrap=$$(cid);if(!wrap)return;
+  const vals=getMSDValues(cid);
+  const cnt=wrap.querySelector('.msd-cnt');
+  const lbl=wrap.querySelector('.msd-lbl');
+  if(cnt){cnt.textContent=vals.length||'';cnt.classList.toggle('has',vals.length>0);}
+  if(lbl)lbl.textContent=vals.length?vals.slice(0,2).join(', ')+(vals.length>2?' +':''):(wrap._placeholder||'Todos');
+  if(wrap._onChange)wrap._onChange(vals);
+}
+function _msdClear(cid){
+  const p=$$(`${cid}-panel`);if(!p)return;
+  p.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);
+  _msdChange(cid);
+}
+function getMSDValues(cid){
+  const p=$$(`${cid}-panel`);if(!p)return[];
+  return Array.from(p.querySelectorAll('input[type=checkbox]:checked')).map(cb=>cb.value);
+}
+// Close MSD panels when clicking outside
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.msd'))document.querySelectorAll('.msd-panel.open').forEach(p=>p.classList.remove('open'));
+});
+// ─── End Multi-Select helper ────────────────────────────────────────
+function fillSearchableSelect(id,items,valueFn,labelFn,placeholder){
+  const el=$$(id);if(!el)return;
+  const prev=el.value;
+  const sorted=[...items].sort((a,b)=>labelFn(a).localeCompare(labelFn(b),'es'));
+  el.innerHTML=`<option value="">${placeholder||'Selecciona...'}</option>`
+    +sorted.map(x=>`<option value="${valueFn(x)}">${labelFn(x)}</option>`).join('');
+  if(prev)el.value=prev;
+  // Enable search on supported browsers via size trick
+  el.setAttribute('data-searchable','1');
+}
 function toggleAnticipoPago(){
   const val=parseFloat(($$('cp-anticipo')||{}).value)||0;
   const row=$$('cp-anticipo-forma-row');
@@ -4220,8 +4404,13 @@ async function confirmarRecepcion(id){
     +(motivo?' — '+motivo:'');
   if(_matchInv){
     const _antes=_matchInv.stock;
+    // Costo promedio ponderado
+    if(_antes>0){
+      _matchInv.costo=Math.round((_matchInv.costo*_antes+costoUnit*udsRec)/(_antes+udsRec)*100)/100;
+    }else{
+      _matchInv.costo=costoUnit;
+    }
     _matchInv.stock+=udsRec;
-    if(_antes===0)_matchInv.costo=c.costo;
     if(!_matchInv.ajustes)_matchInv.ajustes=[];
     _matchInv.ajustes.push({fecha:normalizeDate(fecha),stockAntes:_antes,stockDespues:_matchInv.stock,diferencia:udsRec,motivo:_invMotivo});
   }else{
@@ -4232,6 +4421,7 @@ async function confirmarRecepcion(id){
       tipo:c.tipo,pres:c.pres,
       stock:udsRec,costo:c.costo,precio:_precioSug,
       nota:'Creado desde compra #'+c.id,
+      no_venta:!!(prod&&prod.no_vendible),
       consig:false,cuds:0,cprecio:0,cprov:'',ccom:0,ccond:'',cvenc:'',comprometidas:0,
       ajustes:[{fecha:normalizeDate(fecha),stockAntes:0,stockDespues:udsRec,diferencia:udsRec,motivo:_invMotivo}]});
   }
@@ -4280,6 +4470,7 @@ function setVistaV(v,btn){
 function aplicarFiltroV(){renderVentas();}
 function clearVentasFiltros(){
   const e=$$('vf-estado');if(e)e.selectedIndex=0;
+  const ee=$$('vf-entrega');if(ee)ee.selectedIndex=0;
   sv('vf-desde','');sv('vf-hasta','');
   renderVentas();
 }
@@ -4287,9 +4478,26 @@ function clearVentasFiltros(){
 function renderVentas(){
   syncClientBalances();
   let tot=0,cob=0,sal=0,entPend=0;
+  // Default filters on first load
+  const _vEstEl=$$('vf-estado');if(_vEstEl&&!_vEstEl._initDone){_vEstEl.value='nopagado';_vEstEl._initDone=true;}
+  const _vEntEl=$$('vf-entrega');if(_vEntEl&&!_vEntEl._initDone){_vEntEl.value='noentregado';_vEntEl._initDone=true;}
   const fEstado=cv('vf-estado'),fDesde=cv('vf-desde'),fHasta=cv('vf-hasta'),fSel=cv('v-filtro-sel');
+  const fEntrega=cv('vf-entrega');
   let list=DB.sales.filter(v=>{
-    if(fEstado){const p=v.total-v.pagado;if(fEstado==='pagado'&&p!==0)return false;if(fEstado==='parcial'&&!(p>0&&p<v.total))return false;if(fEstado==='sinpagos'&&p!==v.total)return false;}
+    if(fEstado){
+      const p=v.total-v.pagado;
+      if(fEstado==='pagado'&&p!==0)return false;
+      if(fEstado==='parcial'&&!(p>0&&p<v.total))return false;
+      if(fEstado==='sinpagos'&&p!==v.total)return false;
+      if(fEstado==='nopagado'&&p===0)return false;
+    }
+    if(fEntrega){
+      const ent=v.entregadas||0,uds=v.uds||1;
+      if(fEntrega==='entregado'&&ent<uds)return false;
+      if(fEntrega==='parcial'&&(ent<=0||ent>=uds))return false;
+      if(fEntrega==='sinEntregar'&&ent>0)return false;
+      if(fEntrega==='noentregado'&&ent>=uds)return false;
+    }
     const _vISO2=dateToISO(v.fecha)||'';
     if(fDesde&&_vISO2<fDesde)return false;
     if(fHasta&&_vISO2>fHasta)return false;
@@ -4348,12 +4556,14 @@ function buildVentaProductos(){
     const ex=getExistencia(i);if(ex<=0)return;
     const prod=DB.products.find(p=>p.id===i.pid);
     if(prod&&(prod.oculto||prod.no_vendible))return;
+    if(i.no_venta)return;
     opts.push(`<option value="inv:${i.id}">${i.nombre} ${i.tipo} ${i.pres} — exist: ${ex} — ${fmt$(i.precio)}</option>`);
   });
   DB.packages.forEach(pkg=>{
     if(!pkgEsActivo(pkg))return;
     const cap=getPkgCapacidad(pkg);if(cap>0)opts.push(`<option value="pkg:${pkg.id}">[Pkg] ${pkg.nombre} — exist: ${cap} — ${fmt$(pkg.precio)}</option>`);
   });
+  opts.sort((a,b)=>{const la=a.replace(/<[^>]+>/g,''),lb=b.replace(/<[^>]+>/g,'');return la.localeCompare(lb,'es');});
   $$('v-prod').innerHTML='<option value="">— Selecciona —</option>'+opts.join('');
 }
 
@@ -4808,7 +5018,7 @@ function renderCli(){
     if(_cliLetra&&c.nombre.charAt(0).toUpperCase()!==_cliLetra)return false;
     if(_cq&&!c.nombre.toLowerCase().includes(_cq))return false;
     return true;
-  });
+  }).sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
   $$('cli-tbody').innerHTML=_cf.map(c=>`<tr>
     <td><strong>${c.nombre}</strong></td>
     <td><a href="tel:${c.tel}" style="color:var(--gold)">${c.tel||'—'}</a></td>
@@ -4890,6 +5100,19 @@ function openCliDetalle(id){
   $$('m-cli-det').innerHTML=html;openM('m-cli-det');
 }
 
+function waRecordatorio(ventaId){
+  const v=DB.sales.find(x=>x.id===ventaId);if(!v)return;
+  const cl=DB.clients.find(x=>x.id===v.clienteId);
+  const saldo=v.total-v.pagado;
+  let msg='Hola '+v.cliente+'!\n\n';
+  msg+='Te recordamos que tienes un pago pendiente:\n';
+  msg+='\u2022 Producto: *'+v.producto+'*\n';
+  msg+='\u2022 Saldo pendiente: *'+fmt$(saldo)+'*\n';
+  if(v.prox&&v.prox!=='-')msg+='\u2022 Pr\u00f3ximo pago: *'+fmtDate(v.prox)+'*\n';
+  msg+='\n\u272A _Aura de Oriente_';
+  const tel=(cl&&cl.tel)?cl.tel.replace(/\D/g,''):''
+  window.open('https://wa.me/'+(tel?tel:'')+'?text='+encodeURIComponent(msg),'_blank');
+}
 function waEstadoCuenta(id){
   const c=DB.clients.find(x=>x.id===id);if(!c)return;
   const ventas=DB.sales.filter(s=>s.clienteId===id&&(s.total-s.pagado)>0);
@@ -5224,6 +5447,8 @@ function initReporte(){
 
 function setReporte(tipo,btn){
   curReporte=tipo;
+  // Remove pagos-cli radio when switching to another report
+  if(tipo!=='pagos-cli'){const _rw=$$('r-cli-modo-wrap');if(_rw)_rw.remove();}
   document.querySelectorAll('#s-reportes .seg-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   updateReportFilters(tipo);
@@ -5470,7 +5695,7 @@ function renderReporte(){
     }).join('');
     stats.innerHTML+=_metForma;
     const _fmHdrs=_formasPago.map(f=>`<th style="text-align:right">${f}</th>`).join('');
-    const _cliResumen=DB.clients.filter(c=>!cliId||c.id===cliId).map(c=>{
+    const _cliResumen=DB.clients.filter(c=>!cliId||c.id===cliId).sort((a,b)=>a.nombre.localeCompare(b.nombre,'es')).map(c=>{
       const _vs=DB.sales.filter(s=>s.clienteId===c.id);
       const _comp=_vs.reduce((a,v)=>a+v.total,0);
       const _cob=_vs.reduce((a,v)=>a+v.pagado,0);
@@ -5544,7 +5769,7 @@ function renderReporte(){
       if(tipoProdFilt&&i.tipo!==tipoProdFilt)return false;
       if(presProdFilt&&i.pres!==presProdFilt)return false;
       return true;
-    });
+    }).sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
     // reset accumulators per filtered list
     let _acumExist2=0,_acumExCosto2=0;
     const vc=list.reduce((a,i)=>a+i.stock*i.costo,0),vv=list.reduce((a,i)=>a+i.stock*i.precio,0),tot=list.reduce((a,i)=>a+getExistencia(i),0);
@@ -6027,7 +6252,7 @@ function renderProyeccionCobranza(stats,thead,tbody,extra){
     return true; // show all — sorted by date
   }).slice(0,40); // show up to 40 rows for 8 weeks
 
-  thead.innerHTML='<tr><th>Fecha pago</th><th>Cliente</th><th>Producto</th><th>Saldo venta</th><th>Monto</th><th>Estado</th></tr>';
+  thead.innerHTML='<tr><th>Fecha pago</th><th>Cliente</th><th>Producto</th><th>Saldo venta</th><th>Monto</th><th>Estado</th><th>WA</th></tr>';
   tbody.innerHTML=tableRows.map(r=>{
     const dd=r.dd;
     return `<tr>
@@ -6036,8 +6261,9 @@ function renderProyeccionCobranza(stats,thead,tbody,extra){
       <td style="color:var(--err)">${fmt$(r.saldo)}</td>
       <td style="color:var(--ok);font-weight:500">${fmt$(r.esperado)}</td>
       <td>${dd<0?'<span class="pill p-err">Vencido</span>':dd<=3?'<span class="pill p-warn">Urgente</span>':'<span class="pill p-gold">Programado</span>'}</td>
+      <td><button class="btn btn-wa btn-sm" onclick="waRecordatorio(${r.ventaId})">WA</button></td>
     </tr>`;
-  }).join('')||'<tr><td colspan="6"><div class="empty"><p>Sin pagos en las pr\u00f3ximas 8 semanas</p></div></td></tr>';
+  }).join('')||'<tr><td colspan="7"><div class="empty"><p>Sin pagos en las pr\u00f3ximas 8 semanas</p></div></td></tr>';
 }
 
 function exportReportExcel(){
@@ -6049,6 +6275,66 @@ function exportReportExcel(){
   const ws=XLSX.utils.aoa_to_sheet([headers,...rows]);
   XLSX.utils.book_append_sheet(wb,ws,'Reporte');
   XLSX.writeFile(wb,'reporte_aura_'+curReporte+'_'+TODAY+'.xlsx');toastMsg('Reporte exportado','ok');
+}
+
+async function exportReportPDF(){
+  if(!window.jspdf){toastMsg('Cargando jsPDF...','err');return;}
+  const thead=$$('rep-thead'),tbody=$$('rep-tbody'),extra=$$('rep-extra');
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'l',unit:'mm',format:'a4'});
+  const W=297,H=210,ML=12,MR=12,MT=14;
+  const GOLD=[201,146,42],INK=[14,11,7],MIST=[120,106,85];
+  // Title
+  doc.setFontSize(14);doc.setFont(undefined,'bold');doc.setTextColor(...GOLD);
+  doc.text('Aura de Oriente — '+curReporte.charAt(0).toUpperCase()+curReporte.slice(1),ML,MT);
+  doc.setFontSize(8);doc.setFont(undefined,'normal');doc.setTextColor(...MIST);
+  doc.text('Generado: '+TODAY,W-MR,MT,{align:'right'});
+  // Summary stats row
+  const stats=$$('reporte-stats');
+  let cy=MT+7;
+  if(stats&&stats.textContent.trim()){
+    doc.setFontSize(8);doc.setTextColor(...INK);
+    doc.text(stats.textContent.replace(/\s+/g,' ').trim().slice(0,200),ML,cy);cy+=6;
+  }
+  // Table from thead/tbody
+  if(thead&&thead.textContent.trim()){
+    const headers=Array.from(thead.querySelectorAll('th')).map(th=>th.textContent.trim()).filter(Boolean);
+    const rows=Array.from(tbody.querySelectorAll('tr')).map(tr=>
+      Array.from(tr.querySelectorAll('td')).map(td=>td.textContent.trim()));
+    if(headers.length){
+      const colW=Math.floor((W-ML-MR)/headers.length);
+      const rH=6;const hH=7;
+      // Header row
+      doc.setFillColor(...GOLD);doc.rect(ML,cy,W-ML-MR,hH,'F');
+      doc.setFontSize(7);doc.setFont(undefined,'bold');doc.setTextColor(255,255,255);
+      headers.forEach((h,i)=>doc.text(String(h).slice(0,20),ML+i*colW+2,cy+5));
+      cy+=hH;
+      // Data rows
+      doc.setFont(undefined,'normal');doc.setFontSize(6.5);
+      let odd=false;
+      rows.forEach(row=>{
+        if(cy+rH>H-10){doc.addPage();cy=MT;
+          doc.setFillColor(...GOLD);doc.rect(ML,cy,W-ML-MR,hH,'F');
+          doc.setFontSize(7);doc.setFont(undefined,'bold');doc.setTextColor(255,255,255);
+          headers.forEach((h,i)=>doc.text(String(h).slice(0,20),ML+i*colW+2,cy+5));
+          cy+=hH;doc.setFont(undefined,'normal');doc.setFontSize(6.5);
+        }
+        odd=!odd;
+        if(odd){doc.setFillColor(245,240,234);doc.rect(ML,cy,W-ML-MR,rH,'F');}
+        doc.setTextColor(...INK);
+        row.forEach((cell,i)=>doc.text(String(cell).slice(0,22),ML+i*colW+2,cy+4.5));
+        cy+=rH;
+      });
+    }
+  }
+  // Page numbers
+  const nPgs=doc.internal.getNumberOfPages();
+  for(let i=1;i<=nPgs;i++){
+    doc.setPage(i);doc.setFontSize(7);doc.setTextColor(...MIST);
+    doc.text('Página '+i+'/'+nPgs,W/2,H-5,{align:'center'});
+  }
+  doc.save('reporte_'+curReporte+'_'+TODAY+'.pdf');
+  toastMsg('PDF generado','ok');
 }
 
 // ═══════════════════════════════════════════════════════════
