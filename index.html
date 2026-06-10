@@ -255,9 +255,10 @@ tbody tr:hover td{background:var(--surf2)}
     <button class="nb" onclick="goTo('inventario',this)">Inventario</button>
     <button class="nb" onclick="goTo('paquetes',this)">Paquetes</button>
     <button class="nb" onclick="goTo('clientes',this)">Clientes</button>
+    <button class="nb" onclick="goTo('pedidos',this)">Pedidos</button>
     <button class="nb" onclick="goTo('ventas',this)">Ventas</button>
     <button class="nb" onclick="goTo('reportes',this)">Reportes</button>
-    <button class="nb" onclick="goTo('admin',this)">Administraci&oacute;n</button>
+    <button class="nb" onclick="goTo('admin',this)">Listas</button>
   </div>
   <!-- CONTENT -->
   <div id="content">
@@ -501,6 +502,79 @@ tbody tr:hover td{background:var(--surf2)}
           <th>Acciones</th>
         </tr></thead>
         <tbody id="cli-tbody"></tbody>
+      </table></div>
+    </div>
+
+
+    <!-- ═══ PEDIDOS ═══ -->
+    <div id="s-pedidos" class="sec">
+      <div class="sh">
+        <div class="sh-l"><h2>Pedidos</h2></div>
+        <button class="btn btn-gold btn-sm" onclick="openPedidoForm()">+ Pedido</button>
+      </div>
+      <!-- Contadores -->
+      <div class="sc-row" id="ped-stats" style="flex-wrap:wrap;margin-bottom:10px"></div>
+      <!-- Panel de captura (oculto por defecto) -->
+      <div id="ped-form-panel" style="display:none;background:var(--surf2);border:.5px solid var(--bord2);border-radius:var(--r);padding:16px;margin-bottom:14px">
+        <h3 id="ped-form-title" style="margin:0 0 12px;font-size:14px;color:var(--gold)">Nuevo pedido</h3>
+        <input type="hidden" id="ped-eid">
+        <div class="fg-row">
+          <div class="fg"><label>Fecha del pedido *</label><input type="date" id="ped-fecha"></div>
+          <div class="fg"><label>Fecha Est. de Compra *</label><input type="date" id="ped-fecha-est"></div>
+        </div>
+        <div class="fg-row">
+          <div class="fg" style="flex:2">
+            <label>Cliente</label>
+            <select id="ped-cli-sel" onchange="onPedCliSel()" style="margin-bottom:4px"><option value="">-- Seleccionar cliente existente --</option></select>
+            <input type="text" id="ped-cli-txt" placeholder="O captura cliente potencial nuevo..." style="font-size:12px">
+          </div>
+          <div class="fg" style="flex:2">
+            <label>Art&iacute;culo</label>
+            <select id="ped-art-sel" onchange="onPedArtSel()" style="margin-bottom:4px"><option value="">-- Seleccionar del cat&aacute;logo --</option></select>
+            <input type="text" id="ped-art-txt" placeholder="O captura art&iacute;culo potencial nuevo..." style="font-size:12px">
+          </div>
+        </div>
+        <div class="fg-row">
+          <div class="fg"><label>Unidades</label><input type="number" id="ped-uds" value="1" min="1"></div>
+          <div class="fg"><label>Precio estimado ($)</label><input type="number" id="ped-precio" value="0" min="0"></div>
+          <div class="fg" style="flex:2">
+            <label>Proveedor tentativo</label>
+            <select id="ped-prov-sel" onchange="onPedProvSel()" style="margin-bottom:4px"><option value="">-- Seleccionar proveedor existente --</option></select>
+            <input type="text" id="ped-prov-txt" placeholder="O captura proveedor tentativo nuevo (opcional)..." style="font-size:12px">
+          </div>
+        </div>
+        <div class="fg"><label>Observaciones</label><textarea id="ped-obs" rows="2" style="width:100%;box-sizing:border-box;font-family:Jost;font-size:12px;padding:6px;border:.5px solid var(--bord2);border-radius:var(--rs);background:var(--surf);resize:vertical"></textarea></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+          <button class="btn btn-outline btn-sm" onclick="closePedidoForm()">Cancelar</button>
+          <button class="btn btn-gold btn-sm" id="btn-save-pedido" onclick="savePedido()">Guardar pedido</button>
+        </div>
+      </div>
+      <!-- Filtros -->
+      <div class="fbar" style="margin-bottom:10px">
+        <input id="ped-q" type="text" placeholder="Buscar cliente, art&#237;culo, proveedor..." oninput="renderPedidos()" style="flex:2">
+        <select id="ped-f-estado" onchange="renderPedidos()">
+          <option value="activos">Activos</option>
+          <option value="cumplidos">Cumplidos</option>
+          <option value="">Todos</option>
+        </select>
+        <input type="date" id="ped-f-desde" onchange="renderPedidos()" placeholder="Fecha est. desde">
+        <input type="date" id="ped-f-hasta" onchange="renderPedidos()" placeholder="Fecha est. hasta">
+        <button class="btn btn-outline btn-sm" onclick="clearPedFiltros()">Limpiar</button>
+      </div>
+      <!-- Tabla -->
+      <div class="tw"><table id="ped-tbl">
+        <thead><tr>
+          <th onclick="srt('ped-tbl',0)">F. Pedido</th>
+          <th onclick="srt('ped-tbl',1)">F. Est. Compra</th>
+          <th onclick="srt('ped-tbl',2)">Cliente</th>
+          <th onclick="srt('ped-tbl',3)">Art&iacute;culo</th>
+          <th onclick="srt('ped-tbl',4)">Uds</th>
+          <th onclick="srt('ped-tbl',5)">Precio Est.</th>
+          <th onclick="srt('ped-tbl',6)">Proveedor</th>
+          <th onclick="srt('ped-tbl',7)">Estado</th>
+          <th>Acciones</th>
+        </tr></thead>
+        <tbody id="ped-tbody"></tbody>
       </table></div>
     </div>
 
@@ -1291,6 +1365,7 @@ function loadDB(){
        ],
        precio:1800,normal:2050},
     ],
+    pedidos:[],
     payments_prov:[
       {provId:501,nombre:'Oud Miraj MX',fecha:isoOffset(-10),monto:1500,tipo:'abono',motivo:'Pago parcial transferencia'},
     ]
@@ -1298,7 +1373,7 @@ function loadDB(){
 }
 function saveDB(){localStorage.setItem('aura_db',JSON.stringify(DB));}
 let DB=loadDB();
-let NID=Math.max(100,...(DB.products||[]).map(p=>p.id),...(DB.inventory||[]).map(i=>i.id),...(DB.sales||[]).map(s=>s.id),...(DB.purchases||[]).map(p=>p.id),...(DB.providers||[]).map(p=>p.id),...(DB.clients||[]).map(c=>c.id))+1;
+let NID=Math.max(100,...(DB.products||[]).map(p=>p.id),...(DB.inventory||[]).map(i=>i.id),...(DB.sales||[]).map(s=>s.id),...(DB.purchases||[]).map(p=>p.id),...(DB.providers||[]).map(p=>p.id),...(DB.clients||[]).map(c=>c.id),...(DB.pedidos||[]).map(p=>p.id))+1;
 
 // Migrate legacy: add imgs/img_main_id if missing
 DB.products.forEach(p=>{
@@ -1444,6 +1519,7 @@ async function loadFromGoogle(){
     if('productos'  in d) DB.products  =(d.productos ||[]).map(normalizeProduct);
     if('inventario' in d) DB.inventory =(d.inventario||[]).map(normalizeInv);
     if('ventas'     in d) DB.sales     =(d.ventas    ||[]).map(normalizeVenta);
+    if('pedidos'    in d) DB.pedidos   = d.pedidos   ||[];
     if('clientes'   in d) DB.clients   = d.clientes  ||[];
     if('proveedores'in d) DB.providers =(d.proveedores||[]).map(normalizeProv);
     if('compras'    in d) DB.purchases =(d.compras   ||[]).map(normalizeCompra);
@@ -1801,7 +1877,7 @@ $$('lightbox').addEventListener('click',function(e){if(e.target===this)closeLigh
 // ═══════════════════════════════════════════════════════════
 //  NAV + SWIPE
 // ═══════════════════════════════════════════════════════════
-const NAV_SECS=['catalogo','alertas','mis-prod','proveedores','compras','inventario','paquetes','clientes','ventas','reportes','admin'];
+const NAV_SECS=['catalogo','alertas','mis-prod','proveedores','compras','inventario','paquetes','clientes','pedidos','ventas','reportes','admin'];
 let curSec='catalogo';
 function goTo(sec,btn){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
@@ -1811,7 +1887,7 @@ function goTo(sec,btn){
   else{const idx=NAV_SECS.indexOf(sec);if(idx>=0){const btns=document.querySelectorAll('.nb');if(btns[idx])btns[idx].classList.add('active');}}
   // Scroll nav tab into view
   const nb=document.querySelector('.nb.active');if(nb)nb.scrollIntoView({inline:'nearest',block:'nearest'});
-  const R={catalogo:renderCatalog,alertas:()=>{calcAlerts();renderAlerts();},inventario:renderInv,compras:renderCompras,ventas:renderVentas,clientes:renderCli,proveedores:renderProv,paquetes:renderPkg,'mis-prod':()=>{renderMis();buildMisFieldsUI();},reportes:initReporte,admin:renderAdmin};
+  const R={catalogo:renderCatalog,alertas:()=>{calcAlerts();renderAlerts();},inventario:renderInv,compras:renderCompras,ventas:renderVentas,clientes:renderCli,pedidos:renderPedidos,proveedores:renderProv,paquetes:renderPkg,'mis-prod':()=>{renderMis();buildMisFieldsUI();},reportes:initReporte,admin:renderAdmin};
   if(R[sec])R[sec]();
 }
 function goToAlerts(){goTo('alertas',$$('nb-alertas'));}
@@ -3435,7 +3511,7 @@ function exportMisPDF(){
 
 
 function calcAlerts(){
-  let venc=0,prox=0,consig=0,entrega=0;
+  let venc=0,prox=0,consig=0,entrega=0,pedVenc=0,pedProx=0;
   DB.sales.forEach(v=>{
     const pend=v.total-v.pagado;
     if(pend>0&&v.prox!=='-'){const dd=diffD(v.prox);if(dd!==null){if(dd<0)venc++;else if(dd<=7)prox++;}}
@@ -3445,6 +3521,12 @@ function calcAlerts(){
   DB.inventory.forEach(i=>{
     if(i.consig&&i.cvenc){const dd=diffD(i.cvenc);if(dd!==null){if(dd<0)venc++;else if(dd<=10)consig++;}}
   });
+  // Pedidos vencidos o próximos (solo activos, no cumplidos)
+  (DB.pedidos||[]).filter(p=>!p.eliminado&&!p.cumplido&&p.fechaEst).forEach(p=>{
+    const dd=diffD(p.fechaEst);if(dd===null)return;
+    if(dd<0)pedVenc++;else if(dd<=7)pedProx++;
+  });
+  venc+=pedVenc;prox+=pedProx;
   [['al-venc',venc],['al-prox',prox],['al-consig',consig],['al-entrega',entrega]].forEach(([id,v])=>{const e=$$(id);if(e)e.textContent=v;});
   const total=venc+prox+consig+entrega;
   const bn=$$('bell-n');if(bn){bn.style.display=total>0?'flex':'none';bn.textContent=total>9?'9+':total;}
@@ -3479,6 +3561,30 @@ function renderAlerts(){
   if(consigProx.length){
     html+=`<div class="al-hdr"><span>&#128993; Consignaciones por vencer (${consigProx.length})</span></div>`;
     consigProx.forEach(i=>{const dd=diffD(i.cvenc);html+=`<div class="al-item al-a"><div style="flex:1"><div class="al-title">${i.nombre} ${i.tipo} ${i.pres}</div><div class="al-sub">Vence en ${dd} d&#237;a(s) (${fmtDate(i.cvenc)})</div></div></div>`;});
+  }
+  // Pedidos vencidos
+  const pedVencList=(DB.pedidos||[]).filter(p=>!p.eliminado&&!p.cumplido&&p.fechaEst&&diffD(p.fechaEst)!==null&&diffD(p.fechaEst)<0);
+  if(pedVencList.length){
+    html+='<div class="al-hdr"><span>&#128680; Pedidos vencidos ('+pedVencList.length+')</span></div>';
+    pedVencList.forEach(function(p){
+      var dd=diffD(p.fechaEst);
+      html+='<div class="al-item al-r">'
+        +'<div style="flex:1"><div class="al-title">'+p.cliente+' &#8212; '+p.articulo+'</div>'
+        +'<div class="al-sub">Vencido hace '+Math.abs(dd)+' d&#237;a(s) &#183; Est. Compra: '+fmtDate(p.fechaEst)+'</div></div>'
+        +'<span class="al-act" onclick="openPedidoEdit('+p.id+')">Ver</span></div>';
+    });
+  }
+  // Pedidos próximos 7 días
+  const pedProxList=(DB.pedidos||[]).filter(p=>!p.eliminado&&!p.cumplido&&p.fechaEst&&diffD(p.fechaEst)!==null&&diffD(p.fechaEst)>=0&&diffD(p.fechaEst)<=7);
+  if(pedProxList.length){
+    html+='<div class="al-hdr"><span>&#128993; Pedidos por cumplir ('+pedProxList.length+')</span></div>';
+    pedProxList.forEach(function(p){
+      var dd=diffD(p.fechaEst);
+      html+='<div class="al-item al-a">'
+        +'<div style="flex:1"><div class="al-title">'+p.cliente+' &#8212; '+p.articulo+'</div>'
+        +'<div class="al-sub">En '+dd+' d&#237;a(s) &#183; Est. Compra: '+fmtDate(p.fechaEst)+'</div></div>'
+        +'<span class="al-act" onclick="openPedidoEdit('+p.id+')">Ver</span></div>';
+    });
   }
   // Entregas pendientes
   const entregas=DB.sales.filter(v=>{const entPct=v.total>0?(v.pagado/v.total*100):0;return(v.entregadas||0)<v.uds&&entPct>=60;});
@@ -3814,6 +3920,7 @@ function exportAllData(){
   if(ws1)XLSX.utils.book_append_sheet(wb,ws1,'productos');
   const ws2=toSheet(DB.inventory,i=>({...i,ajustes:j(i.ajustes||[])}));if(ws2)XLSX.utils.book_append_sheet(wb,ws2,'inventario');
   const ws3=toSheet(DB.sales,v=>({...v,pagos:j(v.pagos||[]),pkgProds:j(v.pkgProds||[]),historial_entregas:j(v.historial_entregas||[])}));if(ws3)XLSX.utils.book_append_sheet(wb,ws3,'ventas');
+  const wsPed=toSheet(DB.pedidos||[]);if(wsPed)XLSX.utils.book_append_sheet(wb,wsPed,'pedidos');
   const ws4=toSheet(DB.clients);if(ws4)XLSX.utils.book_append_sheet(wb,ws4,'clientes');
   const ws5=toSheet(DB.providers,p=>({...p,historial:j(p.historial||[])}));if(ws5)XLSX.utils.book_append_sheet(wb,ws5,'proveedores');
   const ws6=toSheet(DB.purchases,c=>({...c,confirmaciones:j(c.confirmaciones||[]),anticipo:c.anticipo||0,anticipo_forma:c.anticipo_forma||''}));if(ws6)XLSX.utils.book_append_sheet(wb,ws6,'compras');
@@ -3836,6 +3943,7 @@ async function importAllData(e){
       DB.inventory=get('inventario').map(i=>normalizeInv(i));
       DB.sales=get('ventas').map(v=>normalizeVenta({...v,pagos:parse(v.pagos),pkgProds:parse(v.pkgProds),historial_entregas:parse(v.historial_entregas||'[]')}));
       DB.clients=get('clientes');
+      DB.pedidos=get('pedidos');
       DB.providers=get('proveedores').map(p=>({...p,historial:parse(p.historial)}));
       DB.purchases=get('compras').map(c=>normalizeCompra({...c,confirmaciones:parse(c.confirmaciones||'[]'),anticipo:parseFloat(c.anticipo)||0,anticipo_forma:c.anticipo_forma||''}));
       DB.packages=get('paquetes').map(pk=>({...pk,prods:parse(pk.prods)}));
@@ -5095,6 +5203,277 @@ function buildCliAbecedario(){
     return '<button class="btn btn-sm '+cls+'" onclick="setCliLetra(\'' +l+'\');renderCli()" style="min-width:26px;padding:3px 5px;font-size:11px'+op+'">'+l+'</button>';
   }).join('');
 }
+
+// ═══════════════════════════════════════════════════════════
+//  PEDIDOS
+// ═══════════════════════════════════════════════════════════
+
+function renderPedidos(){
+  if(!DB.pedidos)DB.pedidos=[];
+  // Stats
+  const activos   = DB.pedidos.filter(p=>!p.eliminado&&!p.cumplido);
+  const cumplidos = DB.pedidos.filter(p=>!p.eliminado&&p.cumplido);
+  const cliPot    = new Set(activos.filter(p=>!p.clienteId).map(p=>p.cliente)).size;
+  const artPot    = new Set(activos.filter(p=>!p.productoId).map(p=>p.articulo)).size;
+  const ventaPot  = activos.reduce((s,p)=>s+(p.uds||1)*(p.precio||0),0);
+  const stats=$$('ped-stats');
+  if(stats) stats.innerHTML=
+    '<div class="sc"><div class="sc-l">Activos</div><div class="sc-v">'+activos.length+'</div></div>'+
+    '<div class="sc"><div class="sc-l">Cumplidos</div><div class="sc-v">'+cumplidos.length+'</div></div>'+
+    '<div class="sc"><div class="sc-l">Clientes potenciales</div><div class="sc-v">'+cliPot+'</div></div>'+
+    '<div class="sc"><div class="sc-l">Art\u00edculos potenciales</div><div class="sc-v">'+artPot+'</div></div>'+
+    '<div class="sc"><div class="sc-l">Venta potencial</div><div class="sc-v">'+fmt$(ventaPot)+'</div></div>';
+
+  // Filtros
+  const q=($$('ped-q')?.value||'').toLowerCase();
+  const fEst=$$('ped-f-estado')?.value??'activos';
+  const fDesde=$$('ped-f-desde')?.value||'';
+  const fHasta=$$('ped-f-hasta')?.value||'';
+
+  let list=(DB.pedidos||[]).filter(p=>{
+    if(p.eliminado)return false;
+    if(fEst==='activos'&&p.cumplido)return false;
+    if(fEst==='cumplidos'&&!p.cumplido)return false;
+    if(fDesde){const iso=dateToISO(normalizeDate(p.fechaEst));if(!iso||iso<fDesde)return false;}
+    if(fHasta){const iso=dateToISO(normalizeDate(p.fechaEst));if(!iso||iso>fHasta)return false;}
+    if(q&&![p.cliente||'',p.articulo||'',p.proveedor||'',p.observaciones||''].join(' ').toLowerCase().includes(q))return false;
+    return true;
+  });
+
+  // Ordenar: fechaEst ASC, fecha ASC, cliente ASC
+  list.sort((a,b)=>{
+    const ia=dateToISO(normalizeDate(a.fechaEst))||'';
+    const ib=dateToISO(normalizeDate(b.fechaEst))||'';
+    if(ia!==ib)return ia.localeCompare(ib);
+    const ja=dateToISO(normalizeDate(a.fecha))||'';
+    const jb=dateToISO(normalizeDate(b.fecha))||'';
+    if(ja!==jb)return ja.localeCompare(jb);
+    return (a.cliente||'').localeCompare(b.cliente||'','es');
+  });
+
+  const tbody=$$('ped-tbody');if(!tbody)return;
+  if(!list.length){
+    tbody.innerHTML='<tr><td colspan="9" class="empty">Sin pedidos que mostrar</td></tr>';
+    return;
+  }
+  tbody.innerHTML=list.map(p=>{
+    const dd=p.fechaEst?diffD(p.fechaEst):null;
+    let estColor='var(--ok)';
+    let estLabel=p.cumplido?'&#10003; Cumplido':'Activo';
+    if(!p.cumplido){
+      if(dd!==null&&dd<0){estColor='var(--err)';estLabel='&#128680; Vencido';}
+      else if(dd!==null&&dd<=7){estColor='var(--warn)';estLabel='&#9888; Pr\u00f3ximo';}
+    }
+    const cliPill=p.clienteId
+      ?'<span class="pill p-ok" style="font-size:10px">Existente</span>'
+      :'<span class="pill p-warn" style="font-size:10px">Potencial</span>';
+    const artPill=p.productoId
+      ?'<span class="pill p-ok" style="font-size:10px">Existente</span>'
+      :'<span class="pill p-warn" style="font-size:10px">Potencial</span>';
+    return '<tr style="'+(p.cumplido?'opacity:.6':'')+'">'+
+      '<td>'+fmtDate(p.fecha)+'</td>'+
+      '<td>'+fmtDate(p.fechaEst)+'</td>'+
+      '<td>'+p.cliente+' '+cliPill+'</td>'+
+      '<td>'+p.articulo+' '+artPill+'</td>'+
+      '<td style="text-align:center">'+p.uds+'</td>'+
+      '<td>'+(p.precio?fmt$(p.precio):'\u2014')+'</td>'+
+      '<td>'+(p.proveedor||'\u2014')+'</td>'+
+      '<td><span style="font-size:11px;font-weight:600;color:'+estColor+'">'+estLabel+'</span></td>'+
+      '<td style="white-space:nowrap">'+
+        '<button class="btn btn-outline btn-sm" onclick="openPedidoEdit('+p.id+')" title="Editar">&#9998;</button> '+
+        (p.cumplido
+          ?'<button class="btn btn-outline btn-sm" onclick="togglePedidoCumplido('+p.id+')" title="Marcar activo" style="color:var(--warn)">&#8635;</button>'
+          :'<button class="btn btn-outline btn-sm" onclick="togglePedidoCumplido('+p.id+')" title="Marcar cumplido" style="color:var(--ok)">&#10003;</button>')+
+        ' <button class="btn btn-outline btn-sm" onclick="deletePedido('+p.id+')" title="Eliminar" style="color:var(--err)">&#10005;</button>'+
+      '</td></tr>';
+  }).join('');
+}
+
+function openPedidoForm(){
+  if(!DB.pedidos)DB.pedidos=[];
+  $$('ped-eid').value='';
+  $$('ped-form-title').textContent='Nuevo pedido';
+  svDate('ped-fecha',TODAY);
+  svDate('ped-fecha-est',isoOffset(14));
+  $$('ped-cli-txt').value='';
+  $$('ped-art-txt').value='';
+  $$('ped-prov-txt').value='';
+  $$('ped-uds').value='1';
+  $$('ped-precio').value='0';
+  $$('ped-obs').value='';
+  // Fill selects
+  fillPedSelects();
+  $$('ped-cli-sel').value='';
+  $$('ped-art-sel').value='';
+  $$('ped-prov-sel').value='';
+  $$('ped-form-panel').style.display='block';
+  $$('ped-form-panel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function openPedidoEdit(id){
+  const p=(DB.pedidos||[]).find(x=>x.id===id||Number(x.id)===Number(id));
+  if(!p)return;
+  fillPedSelects();
+  $$('ped-eid').value=p.id;
+  $$('ped-form-title').textContent='Editar pedido';
+  svDate('ped-fecha',p.fecha);
+  svDate('ped-fecha-est',p.fechaEst);
+  // Cliente
+  if(p.clienteId){$$('ped-cli-sel').value=p.clienteId;$$('ped-cli-txt').value='';}
+  else{$$('ped-cli-sel').value='';$$('ped-cli-txt').value=p.cliente||'';}
+  // Artículo
+  if(p.productoId){$$('ped-art-sel').value=p.productoId;$$('ped-art-txt').value='';}
+  else{$$('ped-art-sel').value='';$$('ped-art-txt').value=p.articulo||'';}
+  // Proveedor
+  if(p.proveedorId){$$('ped-prov-sel').value=p.proveedorId;$$('ped-prov-txt').value='';}
+  else{$$('ped-prov-sel').value='';$$('ped-prov-txt').value=p.proveedor||'';}
+  $$('ped-uds').value=p.uds||1;
+  $$('ped-precio').value=p.precio||0;
+  $$('ped-obs').value=p.observaciones||'';
+  $$('ped-form-panel').style.display='block';
+  $$('ped-form-panel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function fillPedSelects(){
+  // Clientes
+  const cliSel=$$('ped-cli-sel');
+  if(cliSel){
+    const cs=[...DB.clients].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+    cliSel.innerHTML='<option value="">-- Seleccionar cliente existente --</option>'+
+      cs.map(c=>'<option value="'+c.id+'">'+c.nombre+'</option>').join('');
+  }
+  // Artículos (catálogo completo, todos)
+  const artSel=$$('ped-art-sel');
+  if(artSel){
+    const ps=[...DB.products].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+    artSel.innerHTML='<option value="">-- Seleccionar del cat\u00e1logo --</option>'+
+      ps.map(p=>'<option value="'+p.id+'">'+(p.clave?p.clave+' \u2014 ':'')+p.nombre+(p.marca?' ('+( Array.isArray(p.marca)?p.marca[0]:p.marca)+')':'')+'</option>').join('');
+  }
+  // Proveedores
+  const provSel=$$('ped-prov-sel');
+  if(provSel){
+    const pvs=[...DB.providers].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+    provSel.innerHTML='<option value="">-- Seleccionar proveedor existente --</option>'+
+      pvs.map(p=>'<option value="'+p.id+'">'+p.nombre+'</option>').join('');
+  }
+}
+
+function onPedCliSel(){
+  const sel=$$('ped-cli-sel');
+  if(sel&&sel.value)$$('ped-cli-txt').value='';
+}
+function onPedArtSel(){
+  const sel=$$('ped-art-sel');
+  if(sel&&sel.value)$$('ped-art-txt').value='';
+}
+function onPedProvSel(){
+  const sel=$$('ped-prov-sel');
+  if(sel&&sel.value)$$('ped-prov-txt').value='';
+}
+
+function closePedidoForm(){
+  $$('ped-form-panel').style.display='none';
+}
+
+function savePedido(){
+  const _btn=$$('btn-save-pedido');
+  // Validate first
+  const fechaVal=cvDate('ped-fecha');
+  const fechaEstVal=cvDate('ped-fecha-est');
+  if(!fechaVal){toastMsg('La fecha del pedido es obligatoria','err');return;}
+  if(!fechaEstVal){toastMsg('La fecha estimada de compra es obligatoria','err');return;}
+  // Resolve cliente
+  const cliSelVal=$$('ped-cli-sel')?.value||'';
+  const cliTxtVal=($$('ped-cli-txt')?.value||'').trim();
+  let clienteNombre='',clienteId=null;
+  if(cliSelVal){
+    const cli=DB.clients.find(x=>String(x.id)===String(cliSelVal));
+    if(cli){clienteNombre=cli.nombre;clienteId=cli.id;}
+  }else if(cliTxtVal){clienteNombre=cliTxtVal;}
+  if(!clienteNombre){toastMsg('Ingresa o selecciona un cliente','err');return;}
+  // Resolve artículo
+  const artSelVal=$$('ped-art-sel')?.value||'';
+  const artTxtVal=($$('ped-art-txt')?.value||'').trim();
+  let articuloNombre='',productoId=null;
+  if(artSelVal){
+    const prod=DB.products.find(x=>String(x.id)===String(artSelVal));
+    if(prod){articuloNombre=(prod.clave?prod.clave+' \u2014 ':'')+prod.nombre;productoId=prod.id;}
+  }else if(artTxtVal){articuloNombre=artTxtVal;}
+  if(!articuloNombre){toastMsg('Ingresa o selecciona un art\u00edculo','err');return;}
+  // Resolve proveedor
+  const provSelVal=$$('ped-prov-sel')?.value||'';
+  const provTxtVal=($$('ped-prov-txt')?.value||'').trim();
+  let proveedorNombre='',proveedorId=null;
+  if(provSelVal){
+    const prov=DB.providers.find(x=>String(x.id)===String(provSelVal));
+    if(prov){proveedorNombre=prov.nombre;proveedorId=prov.id;}
+  }else if(provTxtVal){proveedorNombre=provTxtVal;}
+  const uds=parseInt($$('ped-uds')?.value)||1;
+  const precio=parseFloat($$('ped-precio')?.value)||0;
+  const obs=($$('ped-obs')?.value||'').trim();
+  const eid=$$('ped-eid')?.value||'';
+
+  if(_btn){_btn.disabled=true;_btn.textContent='Guardando\u2026';}
+  try{
+    if(!DB.pedidos)DB.pedidos=[];
+    if(eid){
+      const p=DB.pedidos.find(x=>String(x.id)===String(eid));
+      if(p){
+        p.fecha=fechaVal;p.fechaEst=fechaEstVal;
+        p.cliente=clienteNombre;p.clienteId=clienteId;
+        p.articulo=articuloNombre;p.productoId=productoId;
+        p.proveedor=proveedorNombre;p.proveedorId=proveedorId;
+        p.uds=uds;p.precio=precio;p.observaciones=obs;
+      }
+    }else{
+      DB.pedidos.push({
+        id:NID++,
+        fecha:fechaVal,fechaEst:fechaEstVal,
+        cliente:clienteNombre,clienteId:clienteId,
+        articulo:articuloNombre,productoId:productoId,
+        proveedor:proveedorNombre,proveedorId:proveedorId,
+        uds:uds,precio:precio,observaciones:obs,
+        cumplido:false,eliminado:false
+      });
+    }
+    saveDB();markPending();
+    closePedidoForm();
+    renderPedidos();
+    calcAlerts();
+    toastMsg(eid?'Pedido actualizado':'Pedido registrado','ok');
+    saveToGoogle().catch(e=>console.warn(e));
+  }finally{
+    if(_btn){_btn.disabled=false;_btn.textContent='Guardar pedido';}
+  }
+}
+
+function togglePedidoCumplido(id){
+  const p=(DB.pedidos||[]).find(x=>x.id===id||Number(x.id)===Number(id));
+  if(!p)return;
+  p.cumplido=!p.cumplido;
+  saveDB();markPending();
+  renderPedidos();calcAlerts();
+  toastMsg(p.cumplido?'Pedido marcado como cumplido':'Pedido reactivado','ok');
+  saveToGoogle().catch(e=>console.warn(e));
+}
+
+function deletePedido(id){
+  if(!confirm('¿Eliminar este pedido permanentemente?'))return;
+  DB.pedidos=(DB.pedidos||[]).filter(x=>x.id!==id&&Number(x.id)!==Number(id));
+  saveDB();markPending();
+  renderPedidos();calcAlerts();
+  toastMsg('Pedido eliminado','ok');
+  saveToGoogle().catch(e=>console.warn(e));
+}
+
+function clearPedFiltros(){
+  sv('ped-q','');
+  const fe=$$('ped-f-estado');if(fe)fe.value='activos';
+  const fd=$$('ped-f-desde');if(fd)fd.value='';
+  const fh=$$('ped-f-hasta');if(fh)fh.value='';
+  renderPedidos();
+}
+
 function renderCli(){
   syncClientBalances();buildCliAbecedario();
   const _cq=($$('cli-q')?.value||'').toLowerCase();
